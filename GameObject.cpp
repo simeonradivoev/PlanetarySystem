@@ -1,6 +1,8 @@
 #include "GameObject.h"
-#include "camera.h"
 #include "Scene.h"
+#include "Material.h"
+#include "shader.h"
+#include "mesh.h"
 
 GameObject::GameObject(const std::string Name)
 {
@@ -16,13 +18,18 @@ GameObject::GameObject(const std::string Name, Mesh* mesh, Material* mat)
 	Scene::CurrentScene->AddGameObject(this);
 }
 
-void GameObject::Draw(const Camera& camera,Display& display){
+void GameObject::Draw(Camera& camera){
 		mat->Bind();
 
 	if (m_mesh != NULL){
-		mat->Update(transform, camera, display);
+		mat->Update(transform, camera);
 		m_mesh->Draw();
 	}
+}
+
+void GameObject::Draw(Camera& camera, Shader* shader){
+	shader->Update(_transform,camera);
+	m_mesh->Draw();
 }
 
 GameObject* GameObject::CreateSphere(const double radius, const int segments,Material* mat){

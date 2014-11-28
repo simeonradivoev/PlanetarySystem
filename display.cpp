@@ -1,6 +1,12 @@
-#include <iostream>
 #include "display.h"
+
+#include <iostream>
 #include <list>
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
 
 static void error_callback(int error, const char* description)
 {
@@ -14,12 +20,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	
 }
 
-static void mouse_callback(GLFWwindow* window, double x, double y)
-{
-	
-}
-
-
+Display* Display::m_currentDisplay;
 
 Display::Display(int width,int height,const std::string& Title)
 {
@@ -47,6 +48,8 @@ Display::Display(int width,int height,const std::string& Title)
 
 	//hide and lock the cursor
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//set automatic GL viewport ajustment
+	glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
 
 	GLenum status = glewInit();
 
@@ -58,23 +61,20 @@ Display::Display(int width,int height,const std::string& Title)
 	m_isClosed = false;
 
 	//enable depth testing
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 
 	//cull back faces
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	//enable transperancy
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-
-Display::~Display()
-{
-	glfwDestroyWindow(m_window);
-	glfwTerminate();
+void Display::Bind(){
+	m_currentDisplay = this;
 }
 
 bool Display::IsClosed()
@@ -87,14 +87,14 @@ void Display::Clear(float r, float g, float b){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Display::DrawViewport(){
-	int width, height;
-	glfwGetFramebufferSize(m_window, &width, &height);
-	glViewport(0, 0, width, height);
-}
-
 void Display::Update()
 {
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
+}
+
+Display::~Display()
+{
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }

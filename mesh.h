@@ -1,7 +1,9 @@
 #pragma once
+#ifndef MESH_H
+#define MESH_H
+
 #include "obj_loader.h"
-#include "transform.h"
-#include "camera.h"
+
 #include <glm\glm.hpp>
 #include <GL\glew.h>
 
@@ -52,4 +54,4 @@ private:
 	GLuint m_vertexArrayBuffers[NUM_BUFFERS];
 	unsigned int m_drawCount;
 };
-
+#endif //MESH_H

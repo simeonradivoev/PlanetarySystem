@@ -1,22 +1,24 @@
 #include "DeferredRendering.h"
+#include "renderTexture.h"
+#include "Gbuffer.h"
 #include <glm\gtc\type_ptr.hpp>
 
 /**
 *	Create the deferred rendering object. I have hardcoded the shader's name here.
 */
-DeferredRendering::DeferredRendering(int _dWidth, int _dHeight, FBORenderTexture* fboRenderTexture, DepthRenderTexture* shadowTexture)
+DeferredRendering::DeferredRendering(int _dWidth, int _dHeight, Gbuffer* fboRenderTexture)
 : m_shader("./res/deferredRendering")
 , m_fboRenderTexture(fboRenderTexture)
-, m_shadowMap(shadowTexture)
 	, m_width(_dWidth)
 	, m_height(_dHeight)
 {	
 	// Get the handles from the shader
-	m_diffuseID = glGetUniformLocationARB(m_shader.GetProgram(),"tDiffuse");
-	m_positionID = glGetUniformLocationARB(m_shader.GetProgram(), "tPosition");
+	//m_positionID = glGetUniformLocationARB(m_shader.GetProgram(), "tPosition");
+	//m_diffuseID = glGetUniformLocationARB(m_shader.GetProgram(),"tDiffuse");
+	
 	m_normalsID = glGetUniformLocationARB(m_shader.GetProgram(), "tNormals");
-	m_shadowMapID = glGetUniformLocationARB(m_shader.GetProgram(), "tShadowMap");
-	m_cameraPositionID = glGetUniformLocationARB(m_shader.GetProgram(),"cameraPosition");
+	//m_texCoordsID = glGetUniformLocationARB(m_shader.GetProgram(), "tTexCoords");
+	//m_cameraPositionID = glGetUniformLocationARB(m_shader.GetProgram(),"cameraPosition");
 
 	m_worldToCameraViewMatrixID = glGetUniformLocationARB(m_shader.GetProgram(),"worldToCameraViewMatrix");
 	m_lightViewToProjectionMatrixID = glGetUniformLocationARB(m_shader.GetProgram(), "lightViewToProjectionMatrix");
@@ -40,25 +42,21 @@ void DeferredRendering::render(Camera& camera)
 	
 	glUseProgramObjectARB(m_shader.GetProgram());
 
-	glActiveTextureARB(GL_TEXTURE0_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getDiffuseTexture());
-	glUniform1iARB ( m_diffuseID, 0 );
-	
-	glActiveTextureARB(GL_TEXTURE1_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getPositionTexture());
-	glUniform1iARB ( m_positionID, 1 );
-	
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getNormalsTexture());
-	glUniform1iARB ( m_normalsID, 2 );
+	glUniform1iARB(m_diffuseID, 0);
 
-	glActiveTextureARB(GL_TEXTURE3_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_shadowMap->getTexture());
-	glUniform1iARB(m_shadowMapID, 3);
+
+	glUniform1iARB(m_positionID, 1);
+
+
+	glUniform1iARB(m_normalsID, 2);
+
+
+	glUniform1iARB(m_texCoordsID, 3);
+
+	m_fboRenderTexture->BindForReading();
+
+	
+	
 
 	glUniformMatrix4fv(m_worldToCameraViewMatrixID, 1, GL_FALSE, glm::value_ptr((glm::mat4)m_worldToCameraViewMatrix));
 	glUniformMatrix4fv(m_lightViewToProjectionMatrixID, 1, GL_FALSE, glm::value_ptr((glm::mat4)m_lightViewToProjectionMatrix));
@@ -115,14 +113,6 @@ void DeferredRendering::endRenderToFBO(){
 	m_fboRenderTexture->stop();
 }
 
-void DeferredRendering::startRenderToShadowMap(){
-	m_shadowMap->start();
-}
-
-void DeferredRendering::endRenderToShadowMap(){
-	m_shadowMap->stop();
-}
-
 void DeferredRendering::render(unsigned int target)
 {
 	//Projection setup
@@ -140,21 +130,21 @@ void DeferredRendering::render(unsigned int target)
 	if (target == 0){
 		glActiveTextureARB(GL_TEXTURE0_ARB);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getDiffuseTexture());
+		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getDiffuseTexture()->getTextureHandler());
 		glUniform1iARB(m_diffuseID, 0);
 	}
 	else if (target == 1)
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getPositionTexture());
+		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getPositionTexture()->getTextureHandler());
 		glUniform1iARB(m_positionID, 0);
 	}
 	else
 	{
 		glActiveTextureARB(GL_TEXTURE0_ARB);
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getNormalsTexture());
+		glBindTexture(GL_TEXTURE_2D, m_fboRenderTexture->getNormalsTexture()->getTextureHandler());
 		glUniform1iARB(m_normalsID, 0);
 	}
 

@@ -57,8 +57,8 @@ DepthRenderTexture::~DepthRenderTexture(){
 void DepthRenderTexture::start(){
 	// Bind our FBO and set the viewport to the proper size
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
-	glPushAttrib(GL_VIEWPORT_BIT);
-	glViewport(0,0,m_width, m_height);
+	//glPushAttrib(GL_VIEWPORT_BIT);
+	//glViewport(0,0,m_width, m_height);
 
 	// Clear the render target
 	glClear( GL_DEPTH_BUFFER_BIT );

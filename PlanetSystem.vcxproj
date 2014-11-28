@@ -83,21 +83,24 @@
     <ClCompile Include="DeferredRendering.cpp" />
     <ClCompile Include="DepthRenderTexture.cpp" />
     <ClCompile Include="display.cpp" />
-    <ClCompile Include="FBORenderTexture.cpp" />
+    <ClCompile Include="Gbuffer.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="light.cpp" />
+    <ClCompile Include="lightPass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="PlanetSystem.cpp" />
-    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="renderTexture.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="texture2D.cpp" />
     <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -105,20 +108,23 @@
     <ClInclude Include="DeferredRendering.h" />
     <ClInclude Include="DepthRenderTexture.h" />
     <ClInclude Include="display.h" />
-    <ClInclude Include="FBORenderTexture.h" />
+    <ClInclude Include="Gbuffer.h" />
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="light.h" />
+    <ClInclude Include="lightPass.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="PlanetSystem.h" />
-    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="renderTexture.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="texture2D.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>

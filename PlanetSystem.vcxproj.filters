@@ -8,129 +8,177 @@
     <Filter Include="Headers">
       <UniqueIdentifier>{ff608d37-ca6f-4f8a-8e8e-9bb919fa3853}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headers\Rendering">
+      <UniqueIdentifier>{d72ed4dd-2850-4eb8-9937-4011d89c6503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Data">
+      <UniqueIdentifier>{74cc11ff-a93b-4730-89d3-52f0f3bf5f7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base">
+      <UniqueIdentifier>{dee9d147-b405-48ef-acb9-40eb32d59361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Data">
+      <UniqueIdentifier>{31e874a5-a3c2-47fc-9571-c0b956c38dd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data">
+      <UniqueIdentifier>{6e72751e-19bf-44db-8d45-44f216339a10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Core">
+      <UniqueIdentifier>{a758a9d0-c871-4bd0-adfd-cf15d8f84c40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Core\Data">
+      <UniqueIdentifier>{a72ad647-e276-45ad-8377-6c408c718b19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Rendering\Data">
+      <UniqueIdentifier>{1d0f831d-c957-4f88-82e4-f458e17550bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{c5b15b52-5b99-4691-8673-6941c4eb3182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering\Data">
+      <UniqueIdentifier>{3b51333d-b865-44e0-94e2-134a98bfdacd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="display.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Base\Data</Filter>
     </ClCompile>
-    <ClCompile Include="obj_loader.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="DeferredRendering.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Quaternion.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FlyCamera.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Base\Data</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="obj_loader.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files\Base\Data</Filter>
     </ClCompile>
     <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="FlyCamera.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="stb_image.c">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="display.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Planet.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="renderTexture.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthRenderTexture.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="texture2D.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
     </ClCompile>
     <ClCompile Include="PlanetSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FBORenderTexture.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="light.cpp">
+      <Filter>Source Files\Base\Data</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredRendering.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="lightPass.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="DepthRenderTexture.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Gbuffer.cpp">
+      <Filter>Source Files\Rendering\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DeferredRendering.h">
+      <Filter>Headers\Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="display.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="mesh.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="texture.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="obj_loader.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Quaternion.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="FlyCamera.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Input.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>Headers\Core\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Headers\Core\Data</Filter>
     </ClInclude>
     <ClInclude Include="Time.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>Headers\Core\Data</Filter>
     </ClInclude>
     <ClInclude Include="Planet.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Data</Filter>
     </ClInclude>
-    <ClInclude Include="PlanetSystem.h">
-      <Filter>Headers</Filter>
+    <ClInclude Include="FlyCamera.h">
+      <Filter>Headers\Data</Filter>
     </ClInclude>
-    <ClInclude Include="DeferredRendering.h">
-      <Filter>Headers</Filter>
+    <ClInclude Include="obj_loader.h">
+      <Filter>Headers\Core</Filter>
     </ClInclude>
-    <ClInclude Include="FBORenderTexture.h">
-      <Filter>Headers</Filter>
+    <ClInclude Include="stb_image.h">
+      <Filter>Headers\Core</Filter>
     </ClInclude>
     <ClInclude Include="DepthRenderTexture.h">
-      <Filter>Headers</Filter>
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="PlanetSystem.h">
+      <Filter>Headers\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="renderTexture.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="texture2D.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Headers\Core\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>Headers\Core\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="lightPass.h">
+      <Filter>Headers\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Gbuffer.h">
+      <Filter>Headers\Rendering\Data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

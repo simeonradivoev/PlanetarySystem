@@ -1,8 +1,11 @@
 #pragma once
-#include "glm\glm.hpp"
-#include "glm\gtx\compatibility.hpp"
+#ifndef TIME_H
+#define TIME_H
+
 #include "Scene.h"
-#include "GLFW\glfw3.h"
+#include <glm\glm.hpp>
+#include <glm\gtx\compatibility.hpp>
+#include <GLFW\glfw3.h>
 
 #define TIME_DLETA_SMOOTH true
 #define TIME_DELTA_RAW false
@@ -29,4 +32,4 @@ private:
 	static double deltaTimeSmooth;
 	static double m_timeScale;
 };
-
+#endif //TIME_H

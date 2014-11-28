@@ -1,9 +1,12 @@
 #pragma once
+#ifndef CAMERA_H
+#define CAMERA_H
+
 #include "transform.h"
 #include "display.h"
 #include "glm\glm.hpp"
 #include "GLFW\glfw3.h"
-
+using namespace glm;
 
 class Camera
 {
@@ -16,12 +19,14 @@ public:
 		m_aspectRatio = aspect;
 	}
 
-	inline glm::dmat4 GetViewProjection(Display& display) const
+	inline dmat4 GetViewProjection()
 	{
 		int width, height;
-		glfwGetFramebufferSize(display.GetWindow(), &width, &height);
-		return glm::perspective(m_fov, (double)width / (double)height, m_zNear, m_ZFar) * m_transform.GetModelRotationFirst();
+		glfwGetFramebufferSize(Display::GetCurrentDisplay()->GetWindow(), &width, &height);
+		return glm::perspective(m_fov, (double)width / (double)height, m_zNear, m_ZFar) * m_transform.GetRotationMatrix() * m_transform.GetTranslationMatrix();
 	}
+
+	virtual void OnRender(Display& display){}
 
 	_declspec(property(get = GetTransform, put = SetTransform)) Transform& transform;
 
@@ -35,4 +40,4 @@ private:
 	double m_ZFar;
 	double m_aspectRatio;
 };
-
+#endif	//CAMERA_H

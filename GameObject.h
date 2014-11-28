@@ -1,8 +1,14 @@
 #pragma once
-#include "mesh.h"
-#include "Material.h"
-#include "transform.h"
+#ifndef GAMEOBJECT_H
+#define GAMEOBJECT_H
+
 #include <string>
+#include "transform.h"
+#include "camera.h"
+
+class Material;
+class Mesh;
+class Shader;
 
 class GameObject
 {
@@ -10,7 +16,8 @@ public:
 	GameObject(const std::string Name);
 	GameObject(const std::string Name,Mesh* mesh, Material* mat);
 	~GameObject();
-	void Draw(const Camera& camera,Display& display);
+	void Draw(Camera& camera);
+	void Draw(Camera& camera, Shader* shader);
 	_declspec(property(get = GetTransform, put = SetTransform)) Transform& transform;
 	_declspec(property(get = GetMesh, put = SetMesh)) Mesh* mesh;
 	_declspec(property(get = GetMaterial, put = SetMaterial)) Material* material;
@@ -31,3 +38,4 @@ private:
 	std::string Name;
 };
 
+#endif //GAMEOBJECT_H

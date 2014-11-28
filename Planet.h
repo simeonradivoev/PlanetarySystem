@@ -1,15 +1,27 @@
 #pragma once
-#include "GameObject.h"
-#include "Material.h"
+#ifndef PLANET_H
+#define PLANET_H
+
+#include "camera.h"
+#include "light.h"
 #include <string>
 #include <list>
+#include <glm\glm.hpp>
+
+class GameObject;
+class Material;
+class Shader;
+class Texture;
+class LightPass;
 
 class Planet
 {
 public:
-	Planet(std::string name, double mass, glm::dvec3 velocity, double angularVelocity, double radius);
+	Planet(std::string name, double mass, glm::dvec3 velocity, double angularVelocity, double radius,double m_lightIntencity,Shader* shader,Texture* texture);
 	GameObject* GetObject(){ return m_object; }
 	void SetObject(GameObject* object){ m_object = object; }
+	Light* GetLight(){ return m_light; }
+	void SetLight(Light* light){ m_light = light; }
 	double GetSpin(){ return m_spin; }
 	void SetSpin(double s){ m_spin = s; }
 	double GetAngularVelocity(){ return m_angularVelocity; }
@@ -18,7 +30,9 @@ public:
 	void SetVelocity(const glm::dvec3 v){ m_velocity = v; }
 	double GetMass(){ return m_mass; }
 	void SetMass(const double m){ m_mass = m; }
-	void DrawTail(Material* material, const Camera& camera, Display& display);
+	void DrawTail(Material* material, Camera& camera);
+	void DrawPlanet(Camera& camera);
+	void DrawLight(Camera& camera,LightPass* lightPass);
 	~Planet();
 private:
 	double m_mass;
@@ -26,9 +40,12 @@ private:
 	double m_spin = 0;
 	double m_angularVelocity;
 	GameObject* m_object;
+	Light* m_light = nullptr;
 	std::string m_name;
 	int m_orbitCounter = 0;
 	double m_orbitSampleTimer = 0;
+	double m_lightIntencity;
+	double m_radius;
 	std::list<glm::dvec3> m_orbit;
 };
-
+#endif //PLANET_H

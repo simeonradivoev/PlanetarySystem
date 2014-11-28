@@ -25,8 +25,8 @@ Shader::Shader(const std::string& fileName)
 	glValidateProgram(m_program);
 	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Error: Program is invalid!");
 
-	m_uniforms[MVP_U] = glGetUniformLocation(m_program, "mvp");
-	m_uniforms[MMV_U] = glGetUniformLocation(m_program, "mmv");
+	m_uniforms[VIEW_PROJECTION_MATRIX_U] = glGetUniformLocation(m_program, "viewProjectionMatrix");
+	m_uniforms[MODEL_MATRIX_U] = glGetUniformLocation(m_program, "modelMatrix");
 	m_uniforms[COLOR_U] = glGetUniformLocation(m_program, "color");
 }
 
@@ -47,13 +47,18 @@ void Shader::Bind()
 	glUseProgram(m_program);
 }
 
-void Shader::Update(const Transform& transform,const Camera& camera,Display& display)
+void Shader::Update(Transform& transform,Camera& camera)
 {
-	glm::dmat4 projection = camera.GetViewProjection(display);
-	glm::dmat4 model =transform.GetModel();
+	glm::dmat4 projection = camera.GetViewProjection();
+	glm::dmat4 model = transform.GetModel();
 
-	glUniformMatrix4fv(m_uniforms[MVP_U], 1, GL_FALSE, &((glm::mat4)projection)[0][0]);
-	glUniformMatrix4fv(m_uniforms[MMV_U], 1, GL_FALSE, &((glm::mat4)model)[0][0]);
+	glUniformMatrix4fv(m_uniforms[VIEW_PROJECTION_MATRIX_U], 1, GL_FALSE, &((glm::mat4)projection)[0][0]);
+	glUniformMatrix4fv(m_uniforms[MODEL_MATRIX_U], 1, GL_FALSE, &((glm::mat4)model)[0][0]);
+}
+
+void Shader::Reset(){
+	glUniformMatrix4fv(m_uniforms[VIEW_PROJECTION_MATRIX_U], 1, GL_FALSE, &(glm::mat4()[0][0]));
+	glUniformMatrix4fv(m_uniforms[MODEL_MATRIX_U], 1, GL_FALSE, &(glm::mat4()[0][0]));
 }
 
 void Shader::SetColor(glm::vec4 color){

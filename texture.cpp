@@ -1,32 +1,35 @@
 #include "texture.h"
 #include "stb_image.h"
 #include <cassert>
-#include <iostream>
 
-Texture::Texture(const std::string& fileName)
+void Texture::Initialize(unsigned int width, unsigned int height, GLenum iternalFormat, GLenum format,GLenum type, bool clamp,GLenum filter)
 {
-	int width, heigh, numComponents;
-	stbi_uc* imageData = stbi_load(fileName.c_str(), &width, &heigh, &numComponents,4);
-
-	if (imageData == NULL)
-		std::cerr << "Texture loading failed for texture" << fileName << std::endl;
-
-	glGenTextures(1, &m_texture);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
-
-	//Texture wraping
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	//Texture filtering
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,heigh,0,GL_RGBA,GL_UNSIGNED_BYTE,imageData);
-
-	stbi_image_free(imageData);
+	m_width = width;
+	m_height = height;
+	m_iternalFormat = iternalFormat;
+	m_format = format;
+	m_type = type;
+	m_clamp = clamp;
+	m_filter = filter;
 }
 
+void Texture::Create(const void *pixels){
+	//Alocate space for texture in GPU and return handler
+	glGenTextures(1, &m_texture);
+	//bind the texture for use
+	Bind();
+	//Texture wraping
+	GLint clamp = m_clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+	setWrap(clamp);
+	//Texture filtering
+	setFiltering(m_filter);
+	//populate the image with the data
+	glTexImage2D(GL_TEXTURE_2D, 0, m_iternalFormat, m_width, m_height, 0, m_format, m_type, pixels);
+}
+
+void Texture::CreateEmpty(){
+	Create(NULL);
+}
 
 Texture::~Texture()
 {
@@ -36,13 +39,23 @@ Texture::~Texture()
 void Texture::Bind(unsigned int unit)
 {
 	assert(unit >= 0 && unit <= 31);
-
 	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D,m_texture);
+	Bind();
+}
+
+void Texture::Bind()
+{
+	glBindTexture(GL_TEXTURE_2D, m_texture);
 }
 
 void Texture::Unbind()
 {
-	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Texture::Unbind(unsigned int unit)
+{
+	assert(unit >= 0 && unit <= 31);
+	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

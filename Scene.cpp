@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Time.h"
+#include "lightPass.h"
 Scene* Scene::CurrentScene;
 
 Scene::Scene()
@@ -14,10 +15,14 @@ void Scene::AddGameObject(GameObject* obj){
 	Scene::CurrentScene->Objects.push_back(obj);
 }
 
-void Scene::Draw(Camera& cam,Display& display){
+void Scene::GeometryPass(Camera& cam){
 	for (std::list<GameObject*>::iterator gameObject = Objects.begin(); gameObject != Objects.end(); gameObject++){
-		(*gameObject)->Draw(cam, display);
+		(*gameObject)->Draw(cam);
 	}
+}
+
+void Scene::LightingPass(Camera& cam,LightPass* pass){
+
 }
 
 void Scene::Create(){

@@ -1,7 +1,10 @@
 #include "Input.h"
+#include "Time.h"
 
-glm::vec2 Input::HVInputRaw;
-glm::vec2 Input::HVInputSmooth;
+vec2 Input::HVInputRaw;
+vec2 Input::HVInputSmooth;
+vec2 Input::m_mouseDelta;
+vec2 Input::m_lastMousePosition;
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -15,9 +18,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 			else
 			{
 				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				int width, height;
-				glfwGetWindowSize(window, &width, &height);
-				glfwSetCursorPos(window, width / 2, height / 2);
 				Input::MouseVisible = true;
 			}
 		}
@@ -68,6 +68,12 @@ void Input::ManageInput(Display& display){
 
 
 	HVInputSmooth = glm::lerp(HVInputSmooth, HVInputRaw, 0.1f);
+
+	double x, y;
+	glfwGetCursorPos(display.GetWindow(),&x,&y);
+
+	m_mouseDelta = (vec2(x, y) - m_lastMousePosition) * (float)Time::GetDeltaTime(TIME_DELTA_RAW);
+	m_lastMousePosition = vec2(x, y);
 }
 
 Input::~Input()

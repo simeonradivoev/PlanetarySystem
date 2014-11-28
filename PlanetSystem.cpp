@@ -1,7 +1,12 @@
 #include "PlanetSystem.h"
-#include <glm\gtc\type_ptr.hpp>
 #include "Time.h"
+#include "Planet.h"
+#include "shader.h"
+#include "Material.h"
+#include "texture2D.h"
+
 #include <iostream>
+#include <glm\gtc\type_ptr.hpp>
 
 const double PlanetSystem::G = 6.67384E-11;
 
@@ -54,24 +59,16 @@ double PlanetSystem::ForceBetween(Planet* a, Planet* b){
 
 void PlanetSystem::Create(){
 	if (CurrentScene != NULL){
-		Shader* planetShader = new Shader("./res/deferredShading");
-		Material* EarthMaterial = new Material(planetShader);
-		EarthMaterial->AddTexture(new Texture("./res/earth.jpg"));
+		Shader* planetShader = new Shader("./res/geometryPass");
+		Shader* sunShader = new Shader("./res/geometryPass");
 
-		Planet* Earth = new Planet("Earth", 10E3, glm::dvec3(0, 0, -1), 10E3, 0.2);
-		Earth->SetObject(GameObject::CreateSphere(0.2,5,EarthMaterial));
+		Planet* Earth = new Planet("Earth", 10E3, glm::dvec3(0, 0, -1), 10E3, 0.2, 0, planetShader, new Texture2D("./res/earth.jpg"));
 		Earth->GetObject()->transform.position = glm::dvec3(4, 0, 0);
 
-		Material* JupiterMaterial = new Material(planetShader);
-		JupiterMaterial->AddTexture(new Texture("./res/jupiter.jpg"));
-		Planet* Jupiter = new Planet("Jupiter", 10E6, glm::dvec3(0, 0, 1), 20, 0.6);
-		Jupiter->SetObject(GameObject::CreateSphere(0.6, 5, JupiterMaterial));
+		Planet* Jupiter = new Planet("Jupiter", 10E6, glm::dvec3(0, 0, 1), 20, 0.6, 0, planetShader, new Texture2D("./res/jupiter.jpg"));
 		Jupiter->GetObject()->transform.position = glm::dvec3(-8, 0, 0);
 
-		Material* SunMaterial = new Material(planetShader);
-		SunMaterial->AddTexture(new Texture("./res/sun.jpg"));
-		Planet* Sun = new Planet("Sun", 10E10, glm::dvec3(0, 0, 0), 5, 1);
-		Sun->SetObject(GameObject::CreateSphere(1, 5, SunMaterial));
+		Planet* Sun = new Planet("Sun", 10E10, glm::dvec3(0, 0, 0), 5, 1, 1, sunShader, new Texture2D("./res/sun.jpg"));
 		Sun->GetObject()->transform.position = glm::dvec3(0, 0, 0);
 
 		AddPlanet(Jupiter);
@@ -80,25 +77,33 @@ void PlanetSystem::Create(){
 	}
 }
 
-void PlanetSystem::Draw(Camera& cam, Display& display){
+void PlanetSystem::GeometryPass(Camera& cam){
 	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++){
-		planet.operator*()->GetObject()->Draw(cam,display);
-		//planet.operator*()->DrawTail(m_orbitMaterial, cam, display);
+		planet.operator*()->DrawPlanet(cam);
+		planet.operator*()->DrawTail(m_orbitMaterial, cam);
 	}
 
-	//DrawGrid(cam, display);
+	DrawGrid(cam);
 }
 
-void PlanetSystem::DrawGrid(Camera& camera,Display& display){
+void PlanetSystem::LightingPass(Camera& cam,LightPass* lightPass)
+{
+	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++)
+	{
+		planet.operator*()->DrawLight(cam, lightPass);
+	}
+}
 
-	unsigned int Cells = 128;
+void PlanetSystem::DrawGrid(Camera& camera){
+
+	unsigned int Cells = 256;
 	float CellSize = 0.2f;
 
 	m_gridTransform.position.x = -round(camera.transform.position.x, CellSize);
 	m_gridTransform.position.z = -round(camera.transform.position.z, CellSize);
 	//std::cout << camera.transform.position.y << std::endl;
 	m_gridMaterial->Bind();
-	m_gridMaterial->Update(m_gridTransform, camera, display);
+	m_gridMaterial->Update(m_gridTransform, camera);
 
 	
 	for (unsigned int x = 0; x < Cells; x++)

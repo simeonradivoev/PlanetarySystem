@@ -1,5 +1,6 @@
 #include "Material.h"
-
+#include "shader.h"
+#include "texture.h"
 
 Material::Material(Shader* shader)
 {
@@ -26,14 +27,15 @@ void Material::Bind(){
 }
 
 void Material::Unbind(){
+	unsigned int index = 0;
 	for (std::list<Texture*>::iterator i = textures.begin(); i != textures.end(); i++){
-		(*i)->Unbind();
+		(*i)->Unbind(index++);
 	}
 }
 
-void Material::Update(const Transform& transform, const Camera& cam,Display& display){
+void Material::Update(Transform& transform, Camera& cam){
 	if (shader != NULL){
-		shader->Update(transform, cam, display);
+		shader->Update(transform, cam);
 	}
 }
 
