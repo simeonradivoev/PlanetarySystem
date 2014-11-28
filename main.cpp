@@ -87,7 +87,7 @@ int main(int argc, char *argv[]){
 
 		//render all geometry to FBO
 		GeometryPass(mainScene,camera);
-		StencilTest();
+		//StencilTest();
 		//calculate lighting
 		LightingPass(mainScene, camera);
 
