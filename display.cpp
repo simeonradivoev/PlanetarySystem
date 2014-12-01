@@ -1,11 +1,13 @@
 #include "display.h"
-
 #include <iostream>
 #include <list>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+
+	if (Display::GetCurrentDisplay() != nullptr)
+		Display::GetCurrentDisplay()->SetSize(width, height);
 }
 
 static void error_callback(int error, const char* description)
@@ -13,16 +15,10 @@ static void error_callback(int error, const char* description)
 	fputs(description, stderr);
 }
 
-glm::vec2& Display::HVInput = glm::vec2(0, 0);
-
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	
-}
-
 Display* Display::m_currentDisplay;
 
-Display::Display(int width,int height,const std::string& Title)
+Display::Display(int width, int height, const std::string& Title)
+: m_width(width), m_height(height)
 {
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
@@ -31,17 +27,13 @@ Display::Display(int width,int height,const std::string& Title)
 	glfwSetErrorCallback(error_callback);
 
 	//create a window trough SDL
-	m_window = glfwCreateWindow(width, height, Title.c_str(), NULL,NULL);
+	m_window = glfwCreateWindow(width, height, Title.c_str(), NULL, NULL);
 
 	if (!m_window)
 	{
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
-
-
-	//key input handling
-	glfwSetKeyCallback(m_window, key_callback);
 
 	//OpenGL context
 	glfwMakeContextCurrent(m_window);
@@ -59,18 +51,6 @@ Display::Display(int width,int height,const std::string& Title)
 	}
 
 	m_isClosed = false;
-
-	//enable depth testing
-	//glEnable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
-
-	//cull back faces
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-
-	//enable transperancy
-	//glEnable(GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Display::Bind(){
@@ -90,7 +70,6 @@ void Display::Clear(float r, float g, float b){
 void Display::Update()
 {
 	glfwSwapBuffers(m_window);
-	glfwPollEvents();
 }
 
 Display::~Display()

@@ -18,6 +18,9 @@ public:
 	void Bind();
 	GLFWwindow* GetWindow(){ return m_window; }
 	static Display* GetCurrentDisplay(){ return Display::m_currentDisplay; }
+	int GetWidth(){ return m_width; }
+	int GetHeight(){ return m_height; }
+	void SetSize(unsigned int width, unsigned int height){ m_width = width; m_height = height; }
 	virtual ~Display();
 	static glm::vec2& HVInput;
 private:
@@ -27,5 +30,7 @@ private:
 	bool m_isClosed;
 	int mouseVisible;
 	static Display* m_currentDisplay;
+	int m_width;
+	int m_height;
 };
 #endif DISPLAY_H

@@ -1,6 +1,5 @@
 #include "obj_loader.h"
 #include <fstream>
-#include <iostream>
 #include <algorithm>
 #include <map>
 
@@ -47,10 +46,6 @@ OBJModel::OBJModel(const std::string& fileName)
                 default: break;
             };
         }
-    }
-    else
-    {
-        std::cerr << "Unable to load mesh: " << fileName << std::endl;
     }
 }
 

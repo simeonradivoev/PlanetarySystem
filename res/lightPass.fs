@@ -24,11 +24,11 @@ struct PointLight
 uniform sampler2D gColorMap;
 uniform sampler2D gPositionMap;
 uniform sampler2D gNormalMap;
+
 uniform vec2 gScreenSize;
 uniform PointLight gPointLight;
 
-
-out vec4 FragColor;
+layout (location = 0) out vec4 LightOut; 
 
 uniform mat4 viewProjectionMatrix;
 uniform mat4 modelMatrix;
@@ -61,13 +61,10 @@ vec4 CalcPointLight(vec3 WorldPos, vec3 Normal)
 
     vec4 Color = CalcLightInternal(gPointLight.Base, LightDirection, WorldPos, Normal);
 
-    float Attenuation =  gPointLight.Atten.Constant +
-                         gPointLight.Atten.Linear * Distance +
-                         gPointLight.Atten.Exp * Distance * Distance;
-
-    Attenuation = max(1.0, Attenuation);
-
-    return Color / Attenuation;
+    //float Attenuation =  (gPointLight.Atten.Constant + (gPointLight.Atten.Linear * Distance) + ());
+	float Attenuation = 1.0 / (1.0 + gPointLight.Atten.Exp * pow(Distance,2));
+	
+    return Color * Attenuation;
 }
 
 vec2 CalcTexCoord()
@@ -80,8 +77,8 @@ void main()
 	vec2 TexCoord = CalcTexCoord();
 	vec3 WorldPos = texture(gPositionMap, TexCoord).xyz;
 	vec3 Normal = texture(gNormalMap, TexCoord).xyz;
-    vec3 Color = texture(gColorMap, TexCoord).xyz;
-	Normal = normalize(Normal);
-	FragColor = vec4(Color,1) * CalcPointLight(WorldPos,Normal);
-	//FragColor = vec4(Normal,1);
+    vec4 Color = texture(gColorMap, TexCoord);
+	
+	LightOut = CalcPointLight(WorldPos,Normal);
+	//LightOut = vec4(WorldPos,1);
 }

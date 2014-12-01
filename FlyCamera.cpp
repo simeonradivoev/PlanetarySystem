@@ -4,9 +4,11 @@
 #include <list>
 #include <glm\glm.hpp>
 #include <glm\gtx\quaternion.hpp>
-#include "Input.h"
-#include "Time.h"
+#include "Core/Input.h"
+#include "Core/Time.h"
 
+double warpSpeedEase = 0.5;
+double maxWarpSpeed = 3;
 
 FlyCamera::FlyCamera(double fov, double aspect, double zNear, double zFar) : Camera(fov, aspect, zNear, zFar)
 {
@@ -27,7 +29,14 @@ void FlyCamera::ManageInput(Display& display){
 
 		//Shift Hyper speed
 		if (glfwGetKey(display.GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS){
-			speed = m_speed * 5;
+			if (m_warpSpeedMultiplayer < maxWarpSpeed)
+				m_warpSpeedMultiplayer += Time::GetDeltaTime(TIME_DELTA_RAW) * warpSpeedEase;
+
+			speed = m_warpSpeedMultiplayer;
+		}
+		else
+		{
+			m_warpSpeedMultiplayer = 1;
 		}
 
 		m_velocity.x = Input::GetHorizontalInput(INPUT_SMOOTH) * speed * Time::GetDeltaTime(TIME_DLETA_SMOOTH);

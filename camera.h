@@ -21,9 +21,12 @@ public:
 
 	inline dmat4 GetViewProjection()
 	{
-		int width, height;
-		glfwGetFramebufferSize(Display::GetCurrentDisplay()->GetWindow(), &width, &height);
-		return glm::perspective(m_fov, (double)width / (double)height, m_zNear, m_ZFar) * m_transform.GetRotationMatrix() * m_transform.GetTranslationMatrix();
+		return glm::perspective(m_fov, (double)Display::GetCurrentDisplay()->GetWidth() / (double)Display::GetCurrentDisplay()->GetHeight(), m_zNear, m_ZFar) * m_transform.GetRotationMatrix() * m_transform.GetTranslationMatrix();
+	}
+
+	inline dmat4 GetPerspectiveMatrix()
+	{
+		return glm::perspective(m_fov, (double)Display::GetCurrentDisplay()->GetWidth() / (double)Display::GetCurrentDisplay()->GetHeight(), m_zNear, m_ZFar);
 	}
 
 	virtual void OnRender(Display& display){}

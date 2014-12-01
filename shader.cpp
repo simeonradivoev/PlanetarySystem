@@ -28,6 +28,7 @@ Shader::Shader(const std::string& fileName)
 	m_uniforms[VIEW_PROJECTION_MATRIX_U] = glGetUniformLocation(m_program, "viewProjectionMatrix");
 	m_uniforms[MODEL_MATRIX_U] = glGetUniformLocation(m_program, "modelMatrix");
 	m_uniforms[COLOR_U] = glGetUniformLocation(m_program, "color");
+	m_uniforms[EMISSION_U] = glGetUniformLocation(m_program, "emmision");
 }
 
 
@@ -63,6 +64,10 @@ void Shader::Reset(){
 
 void Shader::SetColor(glm::vec4 color){
 	glUniform4fv(m_uniforms[COLOR_U], 1, glm::value_ptr(color));
+}
+
+void Shader::SetEmission(float emission){
+	glUniform1f(m_uniforms[EMISSION_U],emission);
 }
 
 

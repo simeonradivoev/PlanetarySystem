@@ -13,6 +13,7 @@ LightPass::LightPass(Gbuffer* gbuffer, Shader* pointLighShader)
 	m_colorTexture_u = glGetUniformLocationARB(*pointLighShader, "gColorMap");
 	m_positionsTexture_u = glGetUniformLocationARB(*pointLighShader, "gPositionMap");
 	m_normalsTexture_u = glGetUniformLocationARB(*pointLighShader, "gNormalMap");
+	m_lightTexture_u = glGetUniformLocationARB(*pointLighShader, "gLightMap");
 	m_screenSize_u = glGetUniformLocationARB(*pointLighShader, "gScreenSize");
 	m_eyePosition = glGetUniformLocationARB(*pointLighShader, "gEyeWorldPos");
 
@@ -41,6 +42,7 @@ void LightPass::UpdateShader(Camera& camera){
 	glUniform1iARB(m_colorTexture_u, 0);
 	glUniform1iARB(m_positionsTexture_u, 1);
 	glUniform1iARB(m_normalsTexture_u, 2);
+	glUniform1iARB(m_lightTexture_u, 3);
 }
 
 void LightPass::UpdateShader(Light& light)
@@ -54,66 +56,44 @@ void LightPass::UpdateShader(Light& light)
 	glUniform3fv(m_position_u,1, glm::value_ptr((glm::vec3)light.GetBoundingSphere()->transform.position));
 }
 
-void LightPass::UpdateShader(glm::vec3 color,float intencity)
-{
-	glUniform3fv(m_lightColor_u, 1, glm::value_ptr(color));
-	glUniform1f(m_lightAmbientIntencity_u, intencity);
-	glUniform1f(m_lightDiffuseIntencity_u, 0);
-	glUniform1f(m_constantAttenuation_u, 0);
-	glUniform1f(m_linearAttenuation_u, 0);
-	glUniform1f(m_expAttenuation_u, 0);
-	glUniform3f(m_position_u, 0, 0,0);
-	LightPass::m_pointLightShader->Reset();
-}
-
-void LightPass::DrawAmbientLight(){
-	int m_width, m_height;
-	glfwGetWindowSize(Display::GetCurrentDisplay()->GetWindow(),&m_width,&m_height);
-
-	//Projection setup
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, m_width, 0, m_height, 0.1f, 2);
-
-	//Model setup
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-
-	// Render the quad
-	glLoadIdentity();
-	glColor3f(1, 1, 1);
-	glTranslatef(0, 0, -1.0);
-
-	glBegin(GL_QUADS);
-	glVertex3f(-1, -1, -1); 
-	glVertex3f(1, -1, -1);
-	glVertex3f(1, 1, -1);
-	glVertex3f(-1, 1, -1);
-	glEnd();
-
-	//Reset to the matrices	
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-}
 
 void LightPass::Start(Camera& camera){
-	glClear(GL_COLOR_BUFFER_BIT);
+	m_gbuffer->BindForLightingPass();
 
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glStencilFunc(GL_NOTEQUAL, 0, 0xFF);
+
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);
 	glBlendFunc(GL_ONE, GL_ONE);
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+
 	glUseProgram(LightPass::m_pointLightShader->GetProgram());
 	UpdateShader(camera);
-	//UpdateShader(glm::vec3(1,1,1),0.1);
-	//DrawAmbientLight();
 }
 
 void LightPass::End(){
 	glUseProgram(0);
+	glCullFace(GL_BACK);
+	glDisable(GL_BLEND);
+}
+
+void LightPass::StencilTest()
+{
+	m_gbuffer->BindForStencilPass();
+
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glClear(GL_STENCIL_BUFFER_BIT);
+
+	glStencilFunc(GL_ALWAYS, 0, 0);
+
+	glStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR_WRAP, GL_KEEP);
+	glStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR_WRAP, GL_KEEP);
 }
 
 

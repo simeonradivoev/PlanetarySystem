@@ -1,4 +1,3 @@
-#include <iostream>
 #include "display.h"
 #include <string>
 #include "shader.h"
@@ -7,14 +6,15 @@
 #include "GameObject.h"
 #include "FlyCamera.h"
 #include "camera.h"
-#include "PlanetSystem.h"
-#include "Input.h"
-#include "Time.h"
+#include "Core/Input.h"
+#include "Core/Time.h"
 #include "Gbuffer.h"
 #include "DeferredRendering.h"
 #include "renderTexture.h"
+#include "canvas.h"
+#include "PlanetSystem.h"
 #include "lightPass.h"
-#include <GL\glew.h>
+#include "gui.h"
 
 #define WIDTH 1280
 #define HEIGH 720
@@ -23,7 +23,7 @@ Gbuffer* m_Gbuffer;
 LightPass* m_lighPass;
 DeferredRendering* m_deferredRendering;
 
-void GeometryPass(Scene& scene,Camera& camera){
+void GeometryPass(Scene& scene,Camera& camera,Display& display){
 	m_Gbuffer->start();
 	//draw the scene and all the gameobjects to save to Buffers
 	scene.GeometryPass(camera);
@@ -32,7 +32,7 @@ void GeometryPass(Scene& scene,Camera& camera){
 
 void LightingPass(Scene& scene, Camera& camera)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	/*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -42,16 +42,37 @@ void LightingPass(Scene& scene, Camera& camera)
 	glBlitFramebuffer(0, 0, WIDTH, HEIGH, 0, 0, WIDTH, HEIGH, GL_COLOR_BUFFER_BIT, GL_LINEAR);*/
 
 	glEnable(GL_STENCIL_TEST);
-	m_Gbuffer->BindForReading();
+	m_lighPass->StencilTest();
+	scene.LightingPass(camera, m_lighPass);
+
 	m_lighPass->Start(camera);
 	scene.LightingPass(camera,m_lighPass);
 	m_lighPass->End();
-	glDisable(GL_STENCIL_TEST);
+    glDisable(GL_STENCIL_TEST);
 
 	//m_deferredRendering->render(camera);
 }
 
+void FinalPass(Camera& camera)
+{
+	m_Gbuffer->BindForFinalPass();
+	m_deferredRendering->SetAmbientLighting(glm::vec3(0, 0.15, 0.3));
+	m_deferredRendering->render(camera);
+}
 
+void GUITest(Canvas* canvas, Display& display,Scene& scene,Camera& camera)
+{
+	GUI::Label(canvas, GUI::Rect(16, 16, 128, 64), std::to_string(Time::GetFPS()).c_str());	//fps counter
+
+	if (Input::MouseVisible)
+	{
+		GUI::Button(canvas, GUI::Rect(display.GetWidth() - 86, display.GetHeight() / 2 - 48, 64, 64), "", "createPlanetButton");
+		GUI::Button(canvas, GUI::Rect(display.GetWidth() - 86, display.GetHeight() / 2 + 48, 64, 64), "", "createSunButton");
+		
+	}
+
+	scene.GUI(canvas, camera);
+}
 
 int main(int argc, char *argv[]){
 	//create the display
@@ -59,6 +80,7 @@ int main(int argc, char *argv[]){
 	display.Bind();
 	Input input(display);
 	Time time = Time();
+	Canvas* canvas = new Canvas(display.GetWindow(),WIDTH, HEIGH);
 
 	m_Gbuffer = new Gbuffer(WIDTH, HEIGH);
 	m_lighPass = new LightPass(m_Gbuffer, new Shader("./res/lightPass"));
@@ -81,19 +103,28 @@ int main(int argc, char *argv[]){
 		//updates time
 		time.Update(mainScene);
 
-		display.Clear(0.0f, 0.15f, 0.3f);
+		display.Clear(0, 0.15, 0.3);
 		input.ManageInput(display);
 		camera.OnRender(display);
-
+		
+		m_Gbuffer->StartFrame();
+		m_Gbuffer->StartFrame();
 		//render all geometry to FBO
-		GeometryPass(mainScene,camera);
+		GeometryPass(mainScene,camera,display);
 		//StencilTest();
 		//calculate lighting
 		LightingPass(mainScene, camera);
+		//dump the GBuffer on screen
+		FinalPass(camera);
+
+		canvas->Begin();
+		GUITest(canvas, display, mainScene, camera);
+		canvas->End();
 
 
 		//update the display and swap the buffers
 		display.Update();
+		input.PollEvents();
 	}
 
 	return 0;

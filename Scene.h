@@ -6,6 +6,7 @@
 #include <list>
 
 class LightPass;
+class Canvas;
 
 class Scene
 {
@@ -16,6 +17,7 @@ public:
 	static Scene* CurrentScene;
 	virtual void GeometryPass(Camera& cam);
 	virtual void LightingPass(Camera& cam, LightPass* lightingPass);
+	virtual void GUI(Canvas* canvas, Camera& camera);
 	static void AddGameObject(GameObject* obj);
 	virtual void Update();
 	virtual void FixedUpdate();

@@ -15,6 +15,7 @@ void Material::Bind(){
 	if (shader != nullptr){
 		shader->Bind();
 		shader->SetColor(m_color);
+		shader->SetEmission(m_emission);
 	}
 
 	glActiveTexture(GL_TEXTURE0);
@@ -36,6 +37,8 @@ void Material::Unbind(){
 void Material::Update(Transform& transform, Camera& cam){
 	if (shader != NULL){
 		shader->Update(transform, cam);
+		shader->SetColor(m_color);
+		shader->SetEmission(m_emission);
 	}
 }
 

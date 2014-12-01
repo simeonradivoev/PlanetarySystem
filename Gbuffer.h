@@ -26,12 +26,16 @@ public:
 	RenderTexture*	getPositionTexture() const { return m_positions; }
 	RenderTexture*	getNormalsTexture() const { return m_normals; }
 	RenderTexture*	getTextureCoordsTexture() const { return m_texCoords; }
-	RenderTexture*	getDepthTexture() const { return m_depth; }
+	RenderTexture*	getDepthTexture() const { return m_depthTexture; }
 	GLuint			getFrameBuffer() const { return m_fbo; }
+	unsigned int	getWidth(){ return m_width; }
+	unsigned int	getHeight(){ return m_height; }
 
-	void BindForGeomPass(){ glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo); }
-	void BindForStencilPass(){};
-	void BindForReading();
+	void BindForGeomPass();
+	void BindForStencilPass();
+	void BindForLightingPass();
+	void BindForFinalPass();
+	void StartFrame();
 
 private:
 
@@ -41,8 +45,8 @@ private:
 	RenderTexture*	m_positions;
 	RenderTexture*	m_normals;
 	RenderTexture*	m_texCoords;
-	GLuint			m_depthBuffer; // Depth buffer handle
-	RenderTexture*	m_depth;
+	RenderTexture*	m_depthTexture;
+	RenderTexture*	m_lighting;
 
 	unsigned int	m_width; // FBO width
 	unsigned int	m_height; // FBO height

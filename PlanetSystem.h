@@ -8,9 +8,12 @@
 #include <glm\glm.hpp>
 #include <glm\gtx\quaternion.hpp>
 
+#define GRID_CELLS_COUNT 256
+
 class Material;
 class Planet;
 class LightPass;
+class Canvas;
 
 class PlanetSystem: public Scene
 {
@@ -21,6 +24,7 @@ public:
 	void AddPlanet(Planet* planet);
 	void GeometryPass(Camera& cam) override;
 	void LightingPass(Camera& cam,LightPass* lightPass) override;
+	void GUI(Canvas* canvas, Camera& camera) override;
 	void Create() override;
 	static const double G;
 private:

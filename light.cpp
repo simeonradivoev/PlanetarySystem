@@ -13,7 +13,7 @@ void Light::GenerateBoundingSphere(Shader* shader)
 {
 	Material* mat = new Material(shader);
 	mat->SetColor(glm::vec4(m_color.x, m_color.y, m_color.z, m_intencity));
-	m_boundingSphere = GameObject::CreateSphere(CalcPointLightBSphere(*this), 10, mat);
+	m_boundingSphere = GameObject::CreateSphere(CalcPointLightBSphere(*this), 15, mat);
 }
 
 double Light::CalcPointLightBSphere(Light& light){

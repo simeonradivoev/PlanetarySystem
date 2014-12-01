@@ -18,6 +18,7 @@ private:
 	glm::dvec3 m_velocity;
 	glm::dquat m_initialRotation;
 	glm::vec2 m_viewRotation;
+	double m_warpSpeedMultiplayer = 1;
 	double m_speed = 0.1f;
 	double m_sensitivity = 3;
 };

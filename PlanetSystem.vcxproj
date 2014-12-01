@@ -53,6 +53,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -70,28 +71,35 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>./lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;glew32s.lib;OpenGL32.lib;glfw3.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="canvas.cpp" />
     <ClCompile Include="DeferredRendering.cpp" />
     <ClCompile Include="DepthRenderTexture.cpp" />
     <ClCompile Include="display.cpp" />
     <ClCompile Include="Gbuffer.cpp" />
     <ClCompile Include="FlyCamera.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
+    <ClCompile Include="gui.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="lightPass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="nanovg.c" />
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="PlanetSystem.cpp" />
@@ -101,21 +109,27 @@
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture2D.cpp" />
-    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="Core\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="canvas.h" />
     <ClInclude Include="DeferredRendering.h" />
     <ClInclude Include="DepthRenderTexture.h" />
     <ClInclude Include="display.h" />
+    <ClInclude Include="fontstash.h" />
     <ClInclude Include="Gbuffer.h" />
     <ClInclude Include="FlyCamera.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Input.h" />
+    <ClInclude Include="Core\Input.h" />
+    <ClInclude Include="gui.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="lightPass.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="nanovg.h" />
+    <ClInclude Include="nanovg_gl.h" />
+    <ClInclude Include="nanovg_gl_utils.h" />
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="PlanetSystem.h" />
@@ -123,9 +137,10 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="stb_truetype.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture2D.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="Core\Time.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

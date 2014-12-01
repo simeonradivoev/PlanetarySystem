@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Time.h"
 #include "lightPass.h"
+#include "canvas.h"
 Scene* Scene::CurrentScene;
 
 Scene::Scene()
@@ -34,6 +35,10 @@ void Scene::Update(){
 }
 
 void Scene::FixedUpdate(){
+
+}
+
+void Scene::GUI(Canvas* canvas, Camera& camera){
 
 }
 

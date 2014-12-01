@@ -19,7 +19,7 @@ class Planet
 public:
 	Planet(std::string name, double mass, glm::dvec3 velocity, double angularVelocity, double radius,double m_lightIntencity,Shader* shader,Texture* texture);
 	GameObject* GetObject(){ return m_object; }
-	void SetObject(GameObject* object){ m_object = object; }
+	void SetObject(GameObject* object){ m_object = object; m_object->name = m_name; }
 	Light* GetLight(){ return m_light; }
 	void SetLight(Light* light){ m_light = light; }
 	double GetSpin(){ return m_spin; }
@@ -30,7 +30,9 @@ public:
 	void SetVelocity(const glm::dvec3 v){ m_velocity = v; }
 	double GetMass(){ return m_mass; }
 	void SetMass(const double m){ m_mass = m; }
+	double GetRadius(){ return m_radius; }
 	void DrawTail(Material* material, Camera& camera);
+	void CalculateTail();
 	void DrawPlanet(Camera& camera);
 	void DrawLight(Camera& camera,LightPass* lightPass);
 	~Planet();

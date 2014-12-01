@@ -17,8 +17,9 @@ Gbuffer::Gbuffer(int _dWidth, int _dHeight)
 	m_diffuse = new RenderTexture(m_width, m_height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, true,GL_NEAREST);
 	m_positions = new RenderTexture(m_width, m_height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
 	m_normals = new RenderTexture(m_width, m_height, GL_RGBA16F_ARB, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
-	m_texCoords = new RenderTexture(m_width, m_height, GL_RGBA16F_ARB, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
-	m_depth = new RenderTexture(m_width, m_height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT, true, GL_NEAREST);
+	m_lighting = new RenderTexture(m_width, m_height, GL_RGBA, GL_RGB, GL_FLOAT, true, GL_LINEAR);
+	m_depthTexture = new RenderTexture(m_width, m_height, GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, true, GL_NEAREST);
+
 
 	// Bind the FBO so that the next operations will be bound to it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
@@ -26,11 +27,8 @@ Gbuffer::Gbuffer(int _dWidth, int _dHeight)
 	m_diffuse->BindToFrameBuffer(m_fbo, GL_COLOR_ATTACHMENT0_EXT,0);
 	m_positions->BindToFrameBuffer(m_fbo, GL_COLOR_ATTACHMENT0_EXT, 1);
 	m_normals->BindToFrameBuffer(m_fbo, GL_COLOR_ATTACHMENT0_EXT, 2);
-	m_texCoords->BindToFrameBuffer(m_fbo, GL_COLOR_ATTACHMENT0_EXT, 3);
-	m_depth->BindToFrameBuffer(m_fbo,GL_DEPTH_ATTACHMENT_EXT,0);
-
-	GLenum buffers[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT };
-	glDrawBuffers(4, buffers);
+	m_lighting->BindToFrameBuffer(m_fbo, GL_COLOR_ATTACHMENT0_EXT, 3);
+	m_depthTexture->BindToFrameBuffer(m_fbo,GL_DEPTH_STENCIL_ATTACHMENT, 0);
 
 	// Check if all worked fine and unbind the FBO
 	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
@@ -40,15 +38,47 @@ Gbuffer::Gbuffer(int _dWidth, int _dHeight)
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-void Gbuffer::BindForReading()
+void Gbuffer::BindForGeomPass()
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glEnable(GL_TEXTURE_2D);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+
+	GLenum buffers[] = { GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT, GL_COLOR_ATTACHMENT2_EXT };
+	glDrawBuffers(3, buffers);
+}
+
+void Gbuffer::BindForStencilPass()
+{
+	glDrawBuffer(GL_NONE);
+}
+
+void Gbuffer::BindForLightingPass()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+	//output buffer only on position 0
+	glDrawBuffer(GL_COLOR_ATTACHMENT3_EXT);
 
 	m_diffuse->Bind(0);
 	m_positions->Bind(1);
 	m_normals->Bind(2);
-	m_texCoords->Bind(3);
+}
+
+void Gbuffer::BindForFinalPass()
+{
+	m_lighting->Bind(3);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glReadBuffer(GL_COLOR_ATTACHMENT3_EXT);
+}
+
+void Gbuffer::StartFrame()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+	glDrawBuffer(GL_COLOR_ATTACHMENT4_EXT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 /**
@@ -58,7 +88,6 @@ Gbuffer::~Gbuffer(){
 	delete m_diffuse;
 	delete m_normals;
 	delete m_positions;
-	delete m_depth;
 }
 
 /**
@@ -69,32 +98,19 @@ void Gbuffer::start(){
 
 	BindForGeomPass();
 	
+	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glPushAttrib(GL_VIEWPORT_BIT);
-	glViewport(0,0,m_width, m_height);
 
 	// Clear the render targets
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	glEnable(GL_DEPTH_TEST);
-
-	glActiveTextureARB(GL_TEXTURE0_ARB);
 	
 }
 
 /**
 *	Stop rendering to this texture.
 */
-void Gbuffer::stop(){	
-
+void Gbuffer::stop(){
 	glDepthMask(GL_FALSE);
-	glDisable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
-	// Stop acquiring and unbind the FBO
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glPopAttrib();
 }

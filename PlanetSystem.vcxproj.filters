@@ -14,12 +14,6 @@
     <Filter Include="Headers\Data">
       <UniqueIdentifier>{74cc11ff-a93b-4730-89d3-52f0f3bf5f7c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Base">
-      <UniqueIdentifier>{dee9d147-b405-48ef-acb9-40eb32d59361}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Base\Data">
-      <UniqueIdentifier>{31e874a5-a3c2-47fc-9571-c0b956c38dd9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Data">
       <UniqueIdentifier>{6e72751e-19bf-44db-8d45-44f216339a10}</UniqueIdentifier>
     </Filter>
@@ -38,31 +32,34 @@
     <Filter Include="Source Files\Rendering\Data">
       <UniqueIdentifier>{3b51333d-b865-44e0-94e2-134a98bfdacd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{dee9d147-b405-48ef-acb9-40eb32d59361}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Data">
+      <UniqueIdentifier>{31e874a5-a3c2-47fc-9571-c0b956c38dd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\GUI">
+      <UniqueIdentifier>{cd0fa21a-a90d-430f-bbc9-0769fa8c81ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Core\GUI">
+      <UniqueIdentifier>{38c62648-1eb2-4622-9ccf-78357b86f70d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files\Base\Data</Filter>
+      <Filter>Source Files\Core\Data</Filter>
     </ClCompile>
     <ClCompile Include="DeferredRendering.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
-      <Filter>Source Files\Base\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="obj_loader.cpp">
-      <Filter>Source Files\Base</Filter>
+      <Filter>Source Files\Core\Data</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
-      <Filter>Source Files\Base\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files\Base</Filter>
+      <Filter>Source Files\Core\Data</Filter>
     </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>Source Files\Rendering\Data</Filter>
@@ -101,13 +98,31 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="light.cpp">
-      <Filter>Source Files\Base\Data</Filter>
+      <Filter>Source Files\Core\Data</Filter>
     </ClCompile>
     <ClCompile Include="lightPass.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Gbuffer.cpp">
       <Filter>Source Files\Rendering\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="nanovg.c">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="obj_loader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Time.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Input.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="canvas.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="gui.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -117,17 +132,11 @@
     <ClInclude Include="display.h">
       <Filter>Headers\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Headers\Core</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Headers\Core\Data</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Headers\Core\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="Time.h">
-      <Filter>Headers\Core</Filter>
     </ClInclude>
     <ClInclude Include="transform.h">
       <Filter>Headers\Core\Data</Filter>
@@ -137,9 +146,6 @@
     </ClInclude>
     <ClInclude Include="FlyCamera.h">
       <Filter>Headers\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="obj_loader.h">
-      <Filter>Headers\Core</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Headers\Core</Filter>
@@ -179,6 +185,36 @@
     </ClInclude>
     <ClInclude Include="Gbuffer.h">
       <Filter>Headers\Rendering\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="fontstash.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="nanovg.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="nanovg_gl.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="nanovg_gl_utils.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_truetype.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="obj_loader.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Time.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Input.h">
+      <Filter>Headers\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="gui.h">
+      <Filter>Headers\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="canvas.h">
+      <Filter>Headers\Core\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

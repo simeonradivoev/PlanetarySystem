@@ -19,6 +19,7 @@ public:
 	void UpdateShader(Camera& camera);
 	void UpdateShader(Light& light);
 	void BindGBufferTextures();
+	void StencilTest();
 private:
 	Gbuffer* m_gbuffer;
 	static Shader* m_pointLightShader;
@@ -26,7 +27,7 @@ private:
 	GLuint m_colorTexture_u;
 	GLuint m_positionsTexture_u;
 	GLuint m_normalsTexture_u;
-	GLuint m_texCoordsTexture_u;
+	GLuint m_lightTexture_u;
 	GLuint m_screenSize_u;
 	GLuint m_eyePosition;
 
@@ -37,8 +38,5 @@ private:
 	GLuint m_constantAttenuation_u;
 	GLuint m_expAttenuation_u;
 	GLuint m_position_u;
-
-	void DrawAmbientLight();
-	void UpdateShader(glm::vec3 color, float intencity);
 };
 #endif //LIGHT_PASS_H

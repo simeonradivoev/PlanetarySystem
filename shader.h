@@ -17,6 +17,7 @@ public:
 	static std::string LoadShader(const std::string& fileName);
 	static GLuint CreateShader(const std::string& text, GLenum shaderType);
 	void SetColor(glm::vec4 color);
+	void SetEmission(float amount);
 	GLuint GetProgram(){ return m_program; }
 	virtual ~Shader();
 	operator GLuint() const{ return m_program; }
@@ -29,6 +30,7 @@ private:
 		VIEW_PROJECTION_MATRIX_U,
 		MODEL_MATRIX_U,
 		COLOR_U,
+		EMISSION_U,
 		NUM_UNIFORMS
 	};
 
