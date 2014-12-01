@@ -12,6 +12,8 @@ If you have questions, feel free to ask, and if i can i will answer.
 * [**GLM**](http://glm.g-truc.net/0.9.5/index.html)
 * [**GLFW**](http://www.glfw.org/)
 * [**GLEW**](http://glew.sourceforge.net/)
+* [**NanoVG**](https://github.com/memononen/nanovg)
+* [**STB**](https://github.com/nothings/stb)
 
 ###### Dependencies:
 * [**Visual C++ Redistributable Package**](http://www.microsoft.com/en-us/download/details.aspx?id=40784)
