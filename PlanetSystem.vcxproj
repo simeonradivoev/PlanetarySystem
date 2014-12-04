@@ -101,6 +101,7 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="nanovg.c" />
     <ClCompile Include="obj_loader.cpp" />
+    <ClCompile Include="physics.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="PlanetSystem.cpp" />
     <ClCompile Include="renderTexture.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="nanovg_gl.h" />
     <ClInclude Include="nanovg_gl_utils.h" />
     <ClInclude Include="obj_loader.h" />
+    <ClInclude Include="physics.h" />
     <ClInclude Include="Planet.h" />
     <ClInclude Include="PlanetSystem.h" />
     <ClInclude Include="renderTexture.h" />

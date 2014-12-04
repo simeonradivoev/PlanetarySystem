@@ -124,6 +124,9 @@
     <ClCompile Include="gui.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="physics.cpp">
+      <Filter>Source Files\Core\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DeferredRendering.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="canvas.h">
       <Filter>Headers\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="physics.h">
+      <Filter>Headers\Core\Data</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

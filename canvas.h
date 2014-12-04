@@ -8,6 +8,7 @@
 #include <map>
 #include "nanovg.h"
 #include "gui.h"
+#include <stack>
 
 class NVGcontext;
 
@@ -18,12 +19,22 @@ public:
 	{
 
 	};
+	struct Layout
+	{
+		float x;
+		float y;
+
+		Layout(float x, float y){ this->x = x; this->y = y; }
+	};
 	Canvas(GLFWwindow* window, int width, int height);
 	NVGcontext* GetContext(){ return m_context; }
 	void Begin();
 	void End();
 	GUI::Style& GetCurrentStyle(){ return m_currentStyle; }
 	GUI::Style GetStyle(const char *name){ return m_styles[name]; }
+	void BeginLayout(int x, int y){ m_currentLayout.push(Layout(x,y)); }
+	void EndLayout(){ m_currentLayout.pop(); }
+	Layout GetCurrentLayout(){ return m_currentLayout.top(); }
 	void AddStyle(char *name, GUI::Style style){ m_styles[name] = style; }
 	int GetImage(const char *name){ return m_images[name]; }
 	void AddImage(const char *name, int image){ m_images[name] = image; }
@@ -37,6 +48,7 @@ private:
 	NVGcontext* m_context;
 	GLFWwindow* m_window;
 	GUI::Style m_currentStyle;
+	std::stack<Layout> m_currentLayout;
 	std::map<const char *, GUI::Style> m_styles;
 	std::map<const char *, int> m_images;
 };

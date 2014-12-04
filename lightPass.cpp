@@ -5,25 +5,25 @@
 
 Shader* LightPass::m_pointLightShader = nullptr;
 
-LightPass::LightPass(Gbuffer* gbuffer, Shader* pointLighShader)
+LightPass::LightPass(Gbuffer* gbuffer)
 {
 	m_gbuffer = gbuffer;
-	LightPass::m_pointLightShader = pointLighShader;
+	LightPass::m_pointLightShader = Shader::FindShader("lightPass");
 
-	m_colorTexture_u = glGetUniformLocationARB(*pointLighShader, "gColorMap");
-	m_positionsTexture_u = glGetUniformLocationARB(*pointLighShader, "gPositionMap");
-	m_normalsTexture_u = glGetUniformLocationARB(*pointLighShader, "gNormalMap");
-	m_lightTexture_u = glGetUniformLocationARB(*pointLighShader, "gLightMap");
-	m_screenSize_u = glGetUniformLocationARB(*pointLighShader, "gScreenSize");
-	m_eyePosition = glGetUniformLocationARB(*pointLighShader, "gEyeWorldPos");
+	m_colorTexture_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gColorMap");
+	m_positionsTexture_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPositionMap");
+	m_normalsTexture_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gNormalMap");
+	m_lightTexture_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gLightMap");
+	m_screenSize_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gScreenSize");
+	m_eyePosition = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gEyeWorldPos");
 
-	m_lightColor_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Base.Color");
-	m_lightAmbientIntencity_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Base.AmbientIntensity");
-	m_lightDiffuseIntencity_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Base.DiffuseIntensity");
-	m_constantAttenuation_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Atten.Constant");
-	m_linearAttenuation_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Atten.Linear");
-	m_expAttenuation_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Atten.Exp");
-	m_position_u = glGetUniformLocationARB(*pointLighShader, "gPointLight.Position");
+	m_lightColor_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Base.Color");
+	m_lightAmbientIntencity_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Base.AmbientIntensity");
+	m_lightDiffuseIntencity_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Base.DiffuseIntensity");
+	m_constantAttenuation_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Atten.Constant");
+	m_linearAttenuation_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Atten.Linear");
+	m_expAttenuation_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Atten.Exp");
+	m_position_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Position");
 
 }
 

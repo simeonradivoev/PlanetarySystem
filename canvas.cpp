@@ -12,8 +12,19 @@ Canvas::Canvas(GLFWwindow* window, int width, int height)
 	CreateDefaultStyles();
 }
 
-void Canvas::Begin(){ nvgBeginFrame(m_context, m_width, m_height, m_width / m_height); }
-void Canvas::End(){ nvgEndFrame(m_context); }
+void Canvas::Begin(){
+	BeginLayout(0, 0);
+	nvgBeginFrame(m_context, m_width, m_height, (float)m_width / (float)m_height);
+}
+void Canvas::End()
+{ 
+	EndLayout();
+	while (!m_currentLayout.empty())
+	{
+		m_currentLayout.pop();
+	}
+	nvgEndFrame(m_context); 
+}
 
 void Canvas::CreateDefaultStyles()
 {
@@ -30,8 +41,18 @@ void Canvas::CreateDefaultStyles()
 	createSunButton.overFillColor = nvgRGBA(255, 160, 0, 30);
 	createSunButton.pressFillColor = nvgRGBA(255, 160,0,100);
 
+	GUI::Style label = GUI::Style(createPlanetButton);
+	label.textAllignment = NVG_ALIGN_LEFT | NVG_ALIGN_TOP;
+
+	GUI::Style window = GUI::Style(createPlanetButton);
+	window.normalFillColor = nvgRGBA(5, 10, 20, 220);
+	window.pressFillColor = nvgRGBA(5, 10, 20, 220);
+	window.topMargin = 20;
+
 	AddStyle("createPlanetButton", createPlanetButton);
 	AddStyle("createSunButton", createSunButton);
+	AddStyle("label", label);
+	AddStyle("window", window);
 }
 
 

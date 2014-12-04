@@ -11,7 +11,7 @@ class Shader;
 class LightPass
 {
 public:
-	LightPass(Gbuffer* gbuffer,Shader* pointLighShader);
+	LightPass(Gbuffer* gbuffer);
 	~LightPass();
 	static Shader* GetPointLightShader(){ return m_pointLightShader; }
 	void Start(Camera& camera);

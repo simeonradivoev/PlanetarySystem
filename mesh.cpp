@@ -81,3 +81,96 @@ void Mesh::Draw()
 
 	glBindVertexArray(0);
 }
+
+Mesh* Mesh::Sphere(const double radius, const int segments)
+{
+	double angle = 0;
+	const unsigned int VertexCount = (180 / segments) * (360 / segments) * 4;
+	const unsigned int indexCount = (VertexCount / 2) * 3;
+	VERTICES* vertex = new VERTICES[VertexCount];
+	unsigned int* indices = new unsigned int[indexCount];
+	//current vertex
+	int n;
+	//current index
+	int i;
+	//loop controls
+	double a, b;
+	double H = 0, K = 0, Z = 0;
+
+	n = 0;
+	i = 0;
+
+	for (b = 0; b <= 180 - segments; b += segments){
+		for (a = 0; a <= 360 - segments; a += segments){
+			vertex[n].GetPos()->x = radius * sin(glm::radians(a)) * sin(glm::radians(b)) - H;
+			vertex[n].GetPos()->z = radius * cos(glm::radians(a)) * sin(glm::radians(b)) + K;
+			vertex[n].GetPos()->y = radius * cos(glm::radians(b)) - Z;
+
+			vertex[n].GetUV()->y = (b) / 180.0;
+			vertex[n].GetUV()->x = (a) / 360.0;
+			vertex[n].SetNormal(glm::normalize(*vertex[n].GetPos()));
+			n++;
+
+			//b + segments
+			vertex[n].GetPos()->x = radius * sin(glm::radians(a)) * sin(glm::radians(b + segments)) - H;
+			vertex[n].GetPos()->z = radius * cos(glm::radians(a)) * sin(glm::radians(b + segments)) + K;
+			vertex[n].GetPos()->y = radius * cos(glm::radians(b + segments)) - Z;
+
+			vertex[n].GetUV()->y = (b + segments) / 180.0;
+			vertex[n].GetUV()->x = (a) / 360.0;
+			vertex[n].SetNormal(glm::normalize(*vertex[n].GetPos()));
+			n++;
+
+			//a + segments
+			vertex[n].GetPos()->x = radius * sin(glm::radians(a + segments)) * sin(glm::radians(b)) - H;
+			vertex[n].GetPos()->z = radius * cos(glm::radians(a + segments)) * sin(glm::radians(b)) + K;
+			vertex[n].GetPos()->y = radius * cos(glm::radians(b)) - Z;
+
+			vertex[n].GetUV()->y = (b) / 180.0;
+			vertex[n].GetUV()->x = (a + segments) / 360.0;
+			vertex[n].SetNormal(glm::normalize(*vertex[n].GetPos()));
+			n++;
+
+			//a + b + segments
+			vertex[n].GetPos()->x = radius * sin(glm::radians(a + segments)) * sin(glm::radians(b + segments)) - H;
+			vertex[n].GetPos()->z = radius * cos(glm::radians(a + segments)) * sin(glm::radians(b + segments)) + K;
+			vertex[n].GetPos()->y = radius * cos(glm::radians(b + segments)) - Z;
+
+			vertex[n].GetUV()->y = (b + segments) / 180.0;
+			vertex[n].GetUV()->x = (a + segments) / 360.0;
+			vertex[n].SetNormal(glm::normalize(*vertex[n].GetPos()));
+			n++;
+
+			indices[i++] = n - 4;
+			indices[i++] = n - 3;
+			indices[i++] = n - 1;
+
+			indices[i++] = n - 4;
+			indices[i++] = n - 1;
+			indices[i++] = n - 2;
+
+
+		}
+	}
+
+	return new Mesh(vertex, VertexCount, indices,indexCount);
+}
+
+Mesh* Mesh::Plane(const float size)
+{
+	VERTICES vertex[]
+	{
+		Vertex(glm::vec3(-1, 0, -1) * size, glm::vec2(0, 0), glm::vec3(0, 1, 0)),
+			Vertex(glm::vec3(-1, 0, 1) * size, glm::vec2(0, 1), glm::vec3(0, 1, 0)),
+			Vertex(glm::vec3(1, 0, 1) * size, glm::vec2(1, 1), glm::vec3(0, 1, 0)),
+			Vertex(glm::vec3(1, 0, -1) * size, glm::vec2(1, 0), glm::vec3(0, 1, 0))
+	};
+
+	unsigned int indecies[]
+	{
+		0, 1, 2,
+			0, 2, 3
+	};
+
+	return new Mesh(vertex,4,indecies,6);
+}

@@ -7,6 +7,7 @@ vec2 Input::m_mouseDelta;
 vec2 Input::m_lastMousePosition;
 vec2 Input::m_mousePos;
 Input::InputEvent Input::m_currentEvent;
+bool Input::m_mouseIsPressed = false;
 
 bool Input::MouseVisible;
 
@@ -46,6 +47,11 @@ void Input::mouse_pos_callback(GLFWwindow* window, double x, double y)
 
 void Input::mouseButtons_callback(GLFWwindow* window, int button, int action, int mod)
 {
+	if (action == GLFW_PRESS)
+		m_mouseIsPressed = true;
+	if (action == GLFW_RELEASE)
+		m_mouseIsPressed = false;
+
 	m_currentEvent.mouseAction = action;
 	m_currentEvent.mouseButton = button;
 }
@@ -94,15 +100,16 @@ void Input::ManageInput(Display& display){
 	HVInputSmooth = glm::lerp(HVInputSmooth, HVInputRaw, 0.1f);
 
 	m_mouseDelta = (m_mousePos - m_lastMousePosition) * (float)Time::GetDeltaTime(TIME_DELTA_RAW);
+	m_currentEvent.mouseDelta = (m_mousePos - m_lastMousePosition);
 	m_lastMousePosition = m_mousePos;
 }
 
 void Input::PollEvents()
 {
-	m_currentEvent.key = GLFW_KEY_UNKNOWN;
 	m_currentEvent.keyAction = GLFW_KEY_UNKNOWN;
 	m_currentEvent.mouseAction = GLFW_KEY_UNKNOWN;
-	m_currentEvent.mouseButton = GLFW_KEY_UNKNOWN;
+	if (Input::m_mouseIsPressed)
+	m_currentEvent.mouseAction = GLFW_DRAGG;
 	glfwPollEvents();
 }
 

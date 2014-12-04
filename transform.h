@@ -11,7 +11,7 @@ using namespace glm;
 class Transform
 {
 public:
-	Transform(const dvec3& pos = dvec3(), const quat& rot = quat(), const dvec3& scale = dvec3(1.0, 1.0, 1.0)) :
+	Transform(const dvec3& pos = dvec3(), const dquat& rot = dquat(), const dvec3& scale = dvec3(1.0, 1.0, 1.0)) :
 		m_pos(pos), m_rot(rot), m_scale(scale){}
 
 	inline dmat4 GetModel() const

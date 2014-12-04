@@ -1,5 +1,9 @@
 #include "gui.h"
 #include "canvas.h"
+#include <iostream>
+
+int GUI::m_activeWindowID = -1;
+bool GUI::m_windowDragg = false;
 
 bool GUI::pnpoly(int nvert, glm::vec2 *vert, glm::vec2 test)
 {
@@ -50,9 +54,13 @@ bool GUI::WorlPointOnScreen(glm::dvec3 worldPos, Camera& camera)
 bool GUI::Button(Canvas* canvas, Rect rect, const char* name, Style style)
 {
 	NVGcontext* vg = canvas->GetContext();
+	Canvas::Layout l = canvas->GetCurrentLayout();
+	float x = rect.x + l.x;
+	float y = rect.y + l.y;
 
 	nvgBeginPath(vg);
-	nvgRoundedRect(vg, rect.x, rect.y, rect.width, rect.height, 16);
+	nvgRoundedRect(vg, x, y, rect.width, rect.height, 16);
+
 	if (OverRect(rect))
 	{
 		if (Input::GetMouseButton(GLFW_MOUSE_BUTTON_1))
@@ -76,13 +84,13 @@ bool GUI::Button(Canvas* canvas, Rect rect, const char* name, Style style)
 	nvgFontFace(vg, style.font);
 
 	nvgFillColor(vg, style.textColor);
-	nvgText(vg, rect.x + style.leftMargin + (rect.width / 2) - style.topMargin, rect.y + style.topMargin + (rect.height / 2) - style.bottomMargin, name, NULL);
+	nvgText(vg, x + style.leftMargin + (rect.width / 2) - style.topMargin, y + style.topMargin + (rect.height / 2) - style.bottomMargin, name, NULL);
 	nvgClosePath(vg);
 
 	nvgBeginPath(vg);
 
-	NVGpaint icon = nvgImagePattern(vg, rect.x + style.leftMargin, rect.y + style.topMargin, rect.width - style.leftMargin - style.rightMargin, rect.height - style.topMargin - style.bottomMargin, 0, style.imageHandler, style.imageAlpha);
-	nvgRect(vg, rect.x + style.leftMargin, rect.y + style.topMargin, rect.width - style.leftMargin - style.rightMargin, rect.height - style.topMargin - style.bottomMargin);
+	NVGpaint icon = nvgImagePattern(vg, rect.x + style.leftMargin + l.x, rect.y + style.topMargin, rect.width - style.leftMargin - style.rightMargin, rect.height - style.topMargin - style.bottomMargin, 0, style.imageHandler, style.imageAlpha);
+	nvgRect(vg, x + style.leftMargin, y + style.topMargin, rect.width - style.leftMargin - style.rightMargin, rect.height - style.topMargin - style.bottomMargin);
 	nvgFillPaint(vg, icon);
 	nvgFill(vg);
 	nvgClosePath(vg);
@@ -91,7 +99,7 @@ bool GUI::Button(Canvas* canvas, Rect rect, const char* name, Style style)
 
 	if (Input::GetCurrentEvent().mouseAction == GLFW_PRESS && Input::GetCurrentEvent().mouseButton == GLFW_MOUSE_BUTTON_1)
 	{
-		if (pointInsideRect(rect, Input::GetCurrentEvent().mousePos))
+		if (pointInsideRect(Rect(x,y,rect.width,rect.height), Input::GetCurrentEvent().mousePos))
 		{
 			return true;
 		}
@@ -111,11 +119,13 @@ bool GUI::Button(Canvas* canvas, Rect rect, const char *name)
 void GUI::Label(Canvas* canvas, Rect rec, const char *text, Style style)
 {
 	NVGcontext* vg = canvas->GetContext();
+	Canvas::Layout l = canvas->GetCurrentLayout();
 
 	nvgFontFace(vg, style.font);
+	nvgFontSize(vg, style.fontSize);
 	nvgTextAlign(vg, style.textAllignment);
 	nvgFillColor(vg, style.textColor);
-	nvgText(vg, rec.x + style.leftMargin, rec.y + style.rightMargin, text, 0);
+	nvgText(vg, rec.x + l.x + style.leftMargin, rec.y + l.y + style.topMargin, text, 0);
 }
 void GUI::Label(Canvas* canvas, Rect rec, const char *text, const char *style)
 {
@@ -124,4 +134,87 @@ void GUI::Label(Canvas* canvas, Rect rec, const char *text, const char *style)
 void GUI::Label(Canvas* canvas, Rect rec, const char *text)
 {
 	GUI::Label(canvas, rec, text, canvas->GetCurrentStyle());
+}
+
+GUI::Rect GUI::BeginWindow(Canvas* canvas, int id, Rect rec, const char *title, Style style)
+{
+	NVGcontext* vg = canvas->GetContext();
+	Canvas::Layout l = canvas->GetCurrentLayout();
+	Input::InputEvent e = Input::GetCurrentEvent();
+	float headerSize = 32;
+	float x = rec.x + l.x;
+	float y = rec.y + l.y + headerSize;
+	float width = rec.width;
+	float height = rec.height - headerSize;
+	float cornerRadius = 3.0;
+	
+	NVGpaint shadowPaint;
+	NVGpaint headerPaint;
+
+	nvgSave(vg);
+
+	//window
+	nvgBeginPath(vg);
+	nvgRoundedRect(vg, x, y, width, height, cornerRadius);
+	if (GUI::m_activeWindowID == id)
+		nvgFillColor(vg, style.pressFillColor);
+	else
+		nvgFillColor(vg, style.normalFillColor);
+	nvgFill(vg);
+
+	// Drop shadow
+	shadowPaint = nvgBoxGradient(vg, x, y + 2, width, height, cornerRadius * 2, 10, nvgRGBA(0, 0, 0, 128), nvgRGBA(0, 0, 0, 0));
+	nvgBeginPath(vg);
+	nvgRect(vg, x - 10, y - 10, width + 20, height + 30);
+	nvgRoundedRect(vg, x, y, width, height, cornerRadius);
+	nvgPathWinding(vg, NVG_HOLE);
+	nvgFillPaint(vg, shadowPaint);
+	nvgFill(vg);
+
+	// Header
+	headerPaint = nvgLinearGradient(vg, x, y, x, y + 15, nvgRGBA(255, 255, 255, 8), nvgRGBA(0, 0, 0, 16));
+	nvgBeginPath(vg);
+	nvgRoundedRect(vg, x + 1, y + 1, width - 2, headerSize, cornerRadius - 1);
+	nvgFillPaint(vg, headerPaint);
+	nvgFill(vg);
+	nvgBeginPath(vg);
+	nvgMoveTo(vg, x + 0.5f, y + 0.5f + 30);
+	nvgLineTo(vg, x + 0.5f + width - 1, y + 0.5f + 30);
+	nvgStrokeColor(vg, nvgRGBA(0, 0, 0, 32));
+	nvgStroke(vg);
+
+	canvas->BeginLayout(x + style.leftMargin,y + style.topMargin);
+	nvgRestore(vg);
+
+	if (e.mouseAction == GLFW_PRESS)
+	{
+		if (OverRect(rec))
+			GUI::m_activeWindowID = id;
+		if (OverRect(Rect(x,y,rec.width,headerSize)))
+			m_windowDragg = true;
+	}
+	else if (e.mouseAction == GLFW_RELEASE && m_activeWindowID == id)
+	{
+		m_windowDragg = false;
+	}
+
+	if (e.mouseAction == GLFW_DRAGG && m_windowDragg && m_activeWindowID == id)
+	{
+		rec.x += Input::GetCurrentEvent().mouseDelta.x;
+		rec.y += Input::GetCurrentEvent().mouseDelta.y;
+	}
+
+	return rec;
+}
+GUI::Rect GUI::BeginWindow(Canvas* canvas, int id, Rect rec, const char *title, const char *style)
+{
+	return GUI::BeginWindow(canvas,id, rec, title, canvas->GetStyle(style));
+}
+GUI::Rect GUI::BeginWindow(Canvas* canvas, int id, Rect rec, const char *title)
+{
+	return GUI::BeginWindow(canvas,id, rec, title, canvas->GetCurrentStyle());
+}
+void GUI::EndWindow(Canvas* canvas)
+{
+	canvas->EndLayout();
 }

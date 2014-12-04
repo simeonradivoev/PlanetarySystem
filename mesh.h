@@ -38,6 +38,8 @@ public:
 	Mesh(VERTICES* vertices, unsigned int numVertex, unsigned int* indices, unsigned int numTriangles);
 	void Draw();
 	virtual ~Mesh();
+	static Mesh* Plane(const float size);
+	static Mesh* Sphere(const double radius, const int segments);
 private:
 	void InitMesh(const IndexedModel& model);
 

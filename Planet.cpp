@@ -12,7 +12,8 @@ Planet::Planet(std::string name, double mass, glm::dvec3 velocity, double angula
 	Material* mat = new Material(shader);
 	mat->AddTexture(texture);
 	mat->SetEmission(lightIntencity);
-	SetObject(GameObject::CreateSphere(radius, 5, mat));
+	SetObject(new GameObject(name, GameObject::GetSphereMesh(), mat));
+	GetObject()->GetTransform().scale = glm::dvec3(radius);
 
 	if (lightIntencity > 0)
 	{
@@ -57,6 +58,11 @@ void Planet::DrawPlanet(Camera& camera){
 	if (m_object != nullptr){
 		m_object->Draw(camera);
 	}
+}
+
+void Planet::DrawSelection(Camera& camera,Shader* shader)
+{
+	GameObject::DrawPlane(Transform(GetObject()->GetTransform().position,glm::dquat(), GetObject()->transform.scale * 3.0), Shader::FindShader("glowShader"), camera);
 }
 
 void Planet::DrawLight(Camera& camera,LightPass* lightPass){

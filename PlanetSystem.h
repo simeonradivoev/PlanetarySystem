@@ -7,6 +7,7 @@
 #include <list>
 #include <glm\glm.hpp>
 #include <glm\gtx\quaternion.hpp>
+#include "gui.h"
 
 #define GRID_CELLS_COUNT 256
 
@@ -14,6 +15,7 @@ class Material;
 class Planet;
 class LightPass;
 class Canvas;
+class Shader;
 
 class PlanetSystem: public Scene
 {
@@ -25,6 +27,7 @@ public:
 	void GeometryPass(Camera& cam) override;
 	void LightingPass(Camera& cam,LightPass* lightPass) override;
 	void GUI(Canvas* canvas, Camera& camera) override;
+	void SelectedPlanetOptionsWindow(Canvas* canvas, GUI::Rect rect);
 	void Create() override;
 	static const double G;
 private:
@@ -37,5 +40,6 @@ private:
 	Material* m_orbitMaterial;
 	Material* m_gridMaterial;
 	Transform m_gridTransform;
+	Planet* m_selectedPlanet = nullptr;
 };
 #endif //PLANET_SYSTEM_H

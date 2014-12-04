@@ -6,6 +6,7 @@
 #include "camera.h"
 #include <GL\glew.h>
 #include<string>
+#include <map>
 
 class Shader
 {
@@ -19,15 +20,25 @@ public:
 	void SetColor(glm::vec4 color);
 	void SetEmission(float amount);
 	GLuint GetProgram(){ return m_program; }
-	virtual ~Shader();
+	void AddUniform(const char *name);
+	void AddAllUniforms(std::string shaderData);
 	operator GLuint() const{ return m_program; }
+	
+
+	static void LoadAllShaders();
+	static bool HasShader(const char *name){ return m_shadersMap.find(name) == m_shadersMap.end(); }
+	static Shader* FindShader(const char *name){ return m_shadersMap[name]; }
+
+	virtual ~Shader();
+	
 private:
 	static void CheckShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage);
 	static const unsigned int NUM_SHADERS = 2;
 
 	enum MyEnum
 	{
-		VIEW_PROJECTION_MATRIX_U,
+		PROJECTION_MATRIX_U,
+		VIEW_MATRIX_U,
 		MODEL_MATRIX_U,
 		COLOR_U,
 		EMISSION_U,
@@ -37,5 +48,7 @@ private:
 	GLuint m_program;
 	GLuint m_shaders[NUM_SHADERS];
 	GLuint m_uniforms[NUM_UNIFORMS];
+	static std::map<const char*, Shader*> m_shadersMap;
+	std::map<const char*, GLuint> m_uniformsMap;
 };
 #endif SHADER_H

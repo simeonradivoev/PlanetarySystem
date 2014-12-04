@@ -5,7 +5,10 @@
 #include "Material.h"
 #include "texture2D.h"
 #include "Core\Input.h"
-#include "gui.h"
+#include "physics.h"
+#include "canvas.h"
+#include <sstream>
+#include <iomanip>
 
 #include <iostream>
 #include <glm\gtc\type_ptr.hpp>
@@ -14,7 +17,7 @@ const double PlanetSystem::G = 6.67384E-11;
 
 PlanetSystem::PlanetSystem()
 {
-	Shader* orbitShader = new Shader("./res/orbitShader");
+	Shader* orbitShader = Shader::FindShader("orbitShader");
 	m_orbitMaterial = new Material(orbitShader);
 	m_orbitMaterial->SetColor(glm::vec4(1, 1, 1, 0.3));
 	m_orbitMaterial->SetEmission(1);
@@ -28,10 +31,31 @@ void PlanetSystem::AddPlanet(Planet* planet){
 }
 
 void PlanetSystem::FixedUpdate(){
+	Physics::Ray mouseRay = Camera::GetCurrentCamera()->ScreenToRay(Input::GetMousePosition());
+	glm::dvec3 planeHit;
+	Physics::IntersectsPlane(mouseRay, glm::dvec3(10, 0, 10), glm::dvec3(0, 10, 0), &planeHit);
+
 	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++){
 		MovePlanet(*planet);
 		planet.operator*()->CalculateTail();
 		AddForcesToPlanet(*planet);
+
+		glm::dvec3 planetHit;
+
+		if ((Physics::IntersectsSphere(mouseRay, planet.operator*()->GetObject()->transform.GetPos(), planet.operator*()->GetRadius(), &planetHit) && Input::MouseVisible))
+		{
+			if (Input::GetCurrentEvent().mouseAction == GLFW_PRESS && Input::GetCurrentEvent().mouseButton == GLFW_MOUSE_BUTTON_1){
+				if (planet.operator*() != m_selectedPlanet)
+				{
+					m_selectedPlanet = planet.operator*();
+				}
+				else
+				{
+					m_selectedPlanet = nullptr;
+				}
+			}
+				
+		}
 	}
 }
 
@@ -65,8 +89,8 @@ double PlanetSystem::ForceBetween(Planet* a, Planet* b){
 void PlanetSystem::Create(){
 	if (CurrentScene != NULL)
 	{
-		Shader* planetShader = new Shader("./res/geometryPass");
-		Shader* sunShader = new Shader("./res/geometryPass");
+		Shader* planetShader = Shader::FindShader("geometryPass");
+		Shader* sunShader = Shader::FindShader("geometryPass");
 
 		Planet* Jupiter = new Planet("Jupiter", 10E6, glm::dvec3(0, 0, 1), 20, 0.6, 0, planetShader, new Texture2D("./res/jupiter.jpg"));
 		Jupiter->GetObject()->transform.position = glm::dvec3(-8, 0, 0);
@@ -88,13 +112,10 @@ void PlanetSystem::Create(){
 }
 
 void PlanetSystem::GeometryPass(Camera& cam){
-	
+	//Physics::Ray mouseRay = cam.ScreenToRay(Input::GetMousePosition());
+
 	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++){
 		planet.operator*()->DrawPlanet(cam);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		planet.operator*()->DrawTail(m_orbitMaterial, cam);
-		glDisable(GL_BLEND);
 	}
 
 	if (Input::MouseVisible)
@@ -143,6 +164,8 @@ void PlanetSystem::DrawGrid(Camera& camera){
 	}
 }
 
+GUI::Rect SelectedPlanetWindowRect = GUI::Rect(64, 256, 256, 256);
+
 void PlanetSystem::GUI(Canvas* canvas,Camera& camera)
 {
 	int width, height;
@@ -154,10 +177,54 @@ void PlanetSystem::GUI(Canvas* canvas,Camera& camera)
 		if (GUI::WorlPointOnScreen(planet.operator*()->GetObject()->transform.position + glm::dvec3(0, planet.operator*()->GetRadius(), 0), camera))
 		{
 			glm::vec2 pos = GUI::WorldToScreen(planet.operator*()->GetObject()->transform.position + glm::dvec3(0, planet.operator*()->GetRadius(), 0), camera);
-			GUI::Label(canvas, GUI::Rect(pos.x, pos.y - 16, 128, 32), planet.operator*()->GetObject()->name.c_str());
+			std::string name = planet.operator*()->GetObject()->name;
+			if (planet.operator*() == m_selectedPlanet)
+			{
+				name.append("]");
+				name.insert(0, "[");
+			}
+			GUI::Label(canvas, GUI::Rect(pos.x, pos.y - 16, 128, 32), name.c_str());
+		}
+	}
+
+	if (Input::MouseVisible)
+	{
+		GUI::Button(canvas, GUI::Rect(width - 86, height / 2 - 48, 64, 64), "", "createPlanetButton");
+		GUI::Button(canvas, GUI::Rect(width - 86, height / 2 + 48, 64, 64), "", "createSunButton");
+
+		if (m_selectedPlanet != nullptr)
+		{
+			SelectedPlanetWindowRect = GUI::BeginWindow(canvas, 0, SelectedPlanetWindowRect, m_selectedPlanet->GetObject()->name.c_str(), "window");
+			SelectedPlanetOptionsWindow(canvas, SelectedPlanetWindowRect);
+			GUI::EndWindow(canvas);
 		}
 	}
 }
+
+void PlanetSystem::SelectedPlanetOptionsWindow(Canvas* canvas, GUI::Rect rect)
+{
+	GUI::Style nameStyle = canvas->GetStyle("label");
+	nameStyle.fontSize = 40;
+	GUI::Label(canvas, GUI::Rect(0, 0, rect.height, 40), m_selectedPlanet->GetObject()->name.c_str(), nameStyle);
+	//mass
+	std::ostringstream mass;
+	mass << m_selectedPlanet->GetMass() << " kg.";
+	GUI::Label(canvas, GUI::Rect(0, 0 + 40, rect.height, 20), ("mass: " + mass.str()).c_str(), "label");
+	//radius
+	std::ostringstream radius;
+	radius << "radius: " << m_selectedPlanet->GetRadius();
+	GUI::Label(canvas, GUI::Rect(0, 0 + 60, rect.height, 20), radius.str().c_str(), "label");
+	//speed
+	std::ostringstream speed;
+	speed << std::setprecision(3) << "speed: " << glm::length(m_selectedPlanet->GetVelocity());
+	GUI::Label(canvas, GUI::Rect(0, 0 + 80, rect.height, 20), speed.str().c_str(), "label");
+	//distance
+	std::ostringstream distance;
+	distance << std::setprecision(4) << "distance form center: " << glm::length(m_selectedPlanet->GetObject()->transform.position);
+	GUI::Label(canvas, GUI::Rect(0, 0 + 100, rect.height, 20), distance.str().c_str(), "label");
+	
+}
+
 
 double PlanetSystem::round(double f, double prec)
 {
@@ -167,4 +234,5 @@ double PlanetSystem::round(double f, double prec)
 
 PlanetSystem::~PlanetSystem()
 {
+	
 }

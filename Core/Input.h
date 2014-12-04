@@ -10,6 +10,7 @@ using namespace glm;
 
 #define INPUT_SMOOTH 0
 #define INPUT_RAW 1
+#define GLFW_DRAGG 3
 
 class Input
 {
@@ -18,6 +19,7 @@ public:
 	{
 		int key = GLFW_KEY_UNKNOWN;
 		glm::vec2 mousePos;
+		glm::vec2 mouseDelta;
 		int mouseButton = GLFW_KEY_UNKNOWN;
 		int keyAction = GLFW_KEY_UNKNOWN;
 		int mouseAction = GLFW_KEY_UNKNOWN;
@@ -41,6 +43,7 @@ private:
 	static vec2 m_mousePos;
 	static vec2 m_mouseDelta;
 	static vec2 m_lastMousePosition;
+	static bool m_mouseIsPressed;
 	static void mouse_pos_callback(GLFWwindow* window, double x, double y);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouseButtons_callback(GLFWwindow* window, int button, int action, int mod);

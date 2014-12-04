@@ -63,14 +63,6 @@ void FinalPass(Camera& camera)
 void GUITest(Canvas* canvas, Display& display,Scene& scene,Camera& camera)
 {
 	GUI::Label(canvas, GUI::Rect(16, 16, 128, 64), std::to_string(Time::GetFPS()).c_str());	//fps counter
-
-	if (Input::MouseVisible)
-	{
-		GUI::Button(canvas, GUI::Rect(display.GetWidth() - 86, display.GetHeight() / 2 - 48, 64, 64), "", "createPlanetButton");
-		GUI::Button(canvas, GUI::Rect(display.GetWidth() - 86, display.GetHeight() / 2 + 48, 64, 64), "", "createSunButton");
-		
-	}
-
 	scene.GUI(canvas, camera);
 }
 
@@ -80,10 +72,11 @@ int main(int argc, char *argv[]){
 	display.Bind();
 	Input input(display);
 	Time time = Time();
+	Shader::LoadAllShaders();
 	Canvas* canvas = new Canvas(display.GetWindow(),WIDTH, HEIGH);
 
 	m_Gbuffer = new Gbuffer(WIDTH, HEIGH);
-	m_lighPass = new LightPass(m_Gbuffer, new Shader("./res/lightPass"));
+	m_lighPass = new LightPass(m_Gbuffer);
 	m_deferredRendering = new DeferredRendering(WIDTH, HEIGH, m_Gbuffer);
 
 	//Create the main scene
@@ -93,8 +86,8 @@ int main(int argc, char *argv[]){
 
 	//create the camera
 	FlyCamera camera( 75, WIDTH / HEIGH, 0.01f, 1000.0f);
-	camera.RotateCamera(55,dvec3(1,0,0));
-	camera.transform.position = glm::dvec3(0, -6, -6);
+	camera.Bind();
+	camera.transform.position = glm::dvec3(0, 6, -6);
 	Camera light(75,WIDTH/HEIGH,4,100);
 	light.transform.position = glm::dvec3(0, 0, -20.0);
 

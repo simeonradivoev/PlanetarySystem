@@ -34,6 +34,7 @@ public:
 	void DrawTail(Material* material, Camera& camera);
 	void CalculateTail();
 	void DrawPlanet(Camera& camera);
+	void DrawSelection(Camera& camera,Shader* shader);
 	void DrawLight(Camera& camera,LightPass* lightPass);
 	~Planet();
 private:

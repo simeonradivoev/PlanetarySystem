@@ -10,7 +10,7 @@ class FlyCamera : public Camera
 {
 public:
 	FlyCamera(double fov, double aspect, double zNear, double zFar);
-	void RotateCamera(double angle, glm::dvec3 axis){ m_initialRotation = glm::angleAxis(angle, axis); }
+	void RotateCamera(double angle, glm::dvec3 axis){ m_initialRotation *= glm::angleAxis(angle, axis); }
 	void OnRender(Display& display) override;
 	void ManageInput(Display& display);
 	~FlyCamera();

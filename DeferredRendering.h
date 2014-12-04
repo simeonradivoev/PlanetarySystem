@@ -26,7 +26,7 @@ public:
 	void render(Camera& camera);
 private:
 	// Variables
-	Shader 		m_shader; // Deferred rendering shader
+	Shader* 		m_shader; // Deferred rendering shader
 	Gbuffer*	m_gBuffer; // A pointer to the FBO render texture that contains diffuse, normals and positions
 
 	unsigned int		m_width; // width

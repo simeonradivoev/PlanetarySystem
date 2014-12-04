@@ -12,6 +12,7 @@ class Canvas;
 class GUI
 {
 public:
+	
 	struct Rect
 	{
 	public:
@@ -28,6 +29,7 @@ public:
 		float height;
 	};
 
+	typedef void(*window_function)(void* ,Canvas*,GUI::Rect);
 	struct Style
 	{
 		float topMargin = 0;
@@ -62,5 +64,13 @@ public:
 	static void Label(Canvas* canvas, Rect rec, const char *text, Style style);
 	static void Label(Canvas* canvas, Rect rec, const char *text, const char *style);
 	static void Label(Canvas* canvas, Rect rec, const char *text);
+	static Rect BeginWindow(Canvas* canvas,int id, Rect rec, const char *title,Style style);
+	static Rect BeginWindow(Canvas* canvas,int id, Rect rec, const char *title, const char *style);
+	static Rect BeginWindow(Canvas* canvas,int id, Rect rec, const char *title);
+	static void EndWindow(Canvas* canvas);
+
+private:
+	static int m_activeWindowID;
+	static bool m_windowDragg;
 };
 #endif

@@ -12,7 +12,8 @@ double maxWarpSpeed = 3;
 
 FlyCamera::FlyCamera(double fov, double aspect, double zNear, double zFar) : Camera(fov, aspect, zNear, zFar)
 {
-	
+	m_viewRotation.x = 180;
+	m_viewRotation.y = 15;
 }
 
 void FlyCamera::OnRender(Display& display){
@@ -48,7 +49,7 @@ void FlyCamera::ManageInput(Display& display){
 		glm::dquat VRotation = glm::angleAxis(m_viewRotation.y * m_sensitivity, glm::dvec3(1, 0, 0) * HRotation);
 
 
-		transform.position += m_velocity * transform.rotation;
+		transform.position -= m_velocity * transform.rotation;
 		transform.rotation = m_initialRotation * HRotation * VRotation;
 
 		

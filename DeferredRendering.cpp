@@ -7,18 +7,18 @@
 *	Create the deferred rendering object. I have hardcoded the shader's name here.
 */
 DeferredRendering::DeferredRendering(int _dWidth, int _dHeight, Gbuffer* gBuffer)
-: m_shader("./res/deferredRendering")
+: m_shader(Shader::FindShader("deferredRendering"))
 , m_gBuffer(gBuffer)
 	, m_width(_dWidth)
 	, m_height(_dHeight)
 {	
 	// Get the handles from the shader
 
-	m_positionID = glGetUniformLocationARB(m_shader.GetProgram(), "tPosition");
-	m_diffuseID = glGetUniformLocationARB(m_shader.GetProgram(),"tDiffuse");
-	m_normalsID = glGetUniformLocationARB(m_shader.GetProgram(), "tNormals");
-	m_lightingID = glGetUniformLocationARB(m_shader.GetProgram(), "tLighting");
-	m_ambientLightID = glGetUniformLocationARB(m_shader.GetProgram(), "ambientLight");
+	m_positionID = glGetUniformLocationARB(m_shader->GetProgram(), "tPosition");
+	m_diffuseID = glGetUniformLocationARB(m_shader->GetProgram(), "tDiffuse");
+	m_normalsID = glGetUniformLocationARB(m_shader->GetProgram(), "tNormals");
+	m_lightingID = glGetUniformLocationARB(m_shader->GetProgram(), "tLighting");
+	m_ambientLightID = glGetUniformLocationARB(m_shader->GetProgram(), "ambientLight");
 }
 
 void DeferredRendering::UpdateShader()
@@ -31,7 +31,7 @@ void DeferredRendering::UpdateShader()
 */
 void DeferredRendering::render(Camera& camera)
 {
-	glUseProgramObjectARB(m_shader.GetProgram());
+	glUseProgramObjectARB(m_shader->GetProgram());
 	UpdateShader();
 
 	//Projection setup

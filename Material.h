@@ -22,6 +22,7 @@ public:
 	void SetColor(glm::vec4 mainColor){ m_color = mainColor; }
 	glm::vec4& GetColor(){ return m_color; }
 	void SetEmission(float emission){ m_emission = emission; }
+	Shader* GetShader(){ return shader; }
 private:
 	Shader* shader;
 	std::list<Texture*> textures;
