@@ -15,6 +15,7 @@
 #include "PlanetSystem.h"
 #include "lightPass.h"
 #include "gui.h"
+#include <time.h>
 
 #define WIDTH 1280
 #define HEIGH 720
@@ -71,9 +72,11 @@ int main(int argc, char *argv[]){
 	Display display(WIDTH, HEIGH, "Hello World");
 	display.Bind();
 	Input input(display);
+	srand(time(NULL));
 	Time time = Time();
 	Shader::LoadAllShaders();
 	Canvas* canvas = new Canvas(display.GetWindow(),WIDTH, HEIGH);
+	
 
 	m_Gbuffer = new Gbuffer(WIDTH, HEIGH);
 	m_lighPass = new LightPass(m_Gbuffer);
