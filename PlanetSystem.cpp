@@ -16,6 +16,7 @@
 const double PlanetSystem::G = 6.67384E-11;
 
 PlanetSystem::PlanetSystem()
+:m_earthTexture("./res/earth.jpg")
 {
 	Shader* orbitShader = Shader::FindShader("orbitShader");
 	m_orbitMaterial = new Material(orbitShader);
@@ -26,8 +27,14 @@ PlanetSystem::PlanetSystem()
 	m_gridMaterial->SetEmission(1);
 }
 
+bool ComparePlanetsByMass(Planet* first,Planet* second)
+{
+	return first->GetMass() > second->GetMass();
+}
+
 void PlanetSystem::AddPlanet(Planet* planet){
 	m_planets.push_back(planet);
+	m_planets.sort(ComparePlanetsByMass);
 }
 
 void PlanetSystem::FixedUpdate(){
@@ -38,7 +45,7 @@ void PlanetSystem::FixedUpdate(){
 	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++){
 		MovePlanet(*planet);
 		planet.operator*()->CalculateTail();
-		AddForcesToPlanet(*planet);
+		planet.operator*()->SetVelocity(CalculateVelocity(planet.operator*(),Time::GetFixedDeltaTime()));
 
 		glm::dvec3 planetHit;
 
@@ -57,6 +64,8 @@ void PlanetSystem::FixedUpdate(){
 				
 		}
 	}
+
+	ManagePlanetPlace();
 }
 
 void PlanetSystem::MovePlanet(Planet* planet)
@@ -69,24 +78,33 @@ void PlanetSystem::MovePlanet(Planet* planet)
 	planet->GetObject()->transform.position += planet->GetVelocity() * Time::GetFixedDeltaTime();
 }
 
-void PlanetSystem::AddForcesToPlanet(Planet* planet){
+glm::dvec3 PlanetSystem::CalculateVelocity(Planet* planet,double timeStep)
+{
 	glm::dvec3 velocity = planet->GetVelocity();
+	int count = 0;
 
-	//velocity += glm::normalize(-planet->GetObject()->transform.position) * Time::GetFixedDeltaTime();
+	for (std::list<Planet*>::iterator neighbor = m_planets.begin(); neighbor != m_planets.end(); neighbor++)
+	{
+		if (count > MAX_PLANET_INTERACTION)
+			break;
 
-	for (std::list<Planet*>::iterator neighbor = m_planets.begin(); neighbor != m_planets.end(); neighbor++){
-		if (neighbor.operator*() != planet){
-			velocity += glm::normalize(neighbor.operator*()->GetObject()->transform.position - planet->GetObject()->transform.position) * Time::GetFixedDeltaTime() * ForceBetween(neighbor.operator*(), planet) / planet->GetMass();
+		if (neighbor.operator*() != planet)
+		{
+			count++;
+			velocity += glm::normalize(neighbor.operator*()->GetObject()->transform.position - planet->GetObject()->transform.position) * timeStep * ForceBetween(neighbor.operator*(), planet) / planet->GetMass();
 		}
 	}
-	planet->SetVelocity(velocity);
+
+	return velocity;
 }
 
-double PlanetSystem::ForceBetween(Planet* a, Planet* b){
+double PlanetSystem::ForceBetween(Planet* a, Planet* b)
+{
 	return PlanetSystem::G * a->GetMass() * b->GetMass() / glm::distance2(a->GetObject()->transform.position,b->GetObject()->transform.position);
 }
 
-void PlanetSystem::Create(){
+void PlanetSystem::Create()
+{
 	if (CurrentScene != NULL)
 	{
 		Shader* planetShader = Shader::FindShader("geometryPass");
@@ -94,15 +112,19 @@ void PlanetSystem::Create(){
 
 		Planet* Jupiter = new Planet("Jupiter", 10E6, glm::dvec3(0, 0, 1), 20, 0.6, 0, planetShader, new Texture2D("./res/jupiter.jpg"));
 		Jupiter->GetObject()->transform.position = glm::dvec3(-8, 0, 0);
+		Jupiter->SetOrbitColor(191, 127, 63);
 
-		Planet* Earth = new Planet("Earth", 10E3, glm::dvec3(0, 0, -1), 10E3, 0.2, 0, planetShader, new Texture2D("./res/earth.jpg"));
+		Planet* Earth = new Planet("Earth", 10E3, glm::dvec3(0, 0, -1), 10E3, 0.2, 0, planetShader, &m_earthTexture);
 		Earth->GetObject()->transform.position = glm::dvec3(4, 0, 0);
+		Earth->SetOrbitColor(62, 187, 187);
 
-		Planet* Earth2 = new Planet("Earth 2.0", 10E3, glm::dvec3(-1, 0, 0), 10E3, 0.2, 0, planetShader, new Texture2D("./res/earth.jpg"));
+		Planet* Earth2 = new Planet("Earth 2.0", 10E3, glm::dvec3(-1, 0, 0), 10E3, 0.2, 0, planetShader, &m_earthTexture);
 		Earth2->GetObject()->transform.position = glm::dvec3(0, -4, 0);
+		Earth2->SetOrbitColor(127, 191, 63);
 
 		Planet* Sun = new Planet("Sun", 10E10, glm::dvec3(0, 0, 0), 5, 1, 80, sunShader, new Texture2D("./res/sun.jpg"));
 		Sun->GetObject()->transform.position = glm::dvec3(0, 0, 0);
+		Sun->SetOrbitColor(191, 63, 63);
 
 		AddPlanet(Jupiter);
 		AddPlanet(Earth2);
@@ -111,11 +133,33 @@ void PlanetSystem::Create(){
 	}
 }
 
+double fRand(double fMin, double fMax)
+{
+	double f = (double)rand() / RAND_MAX;
+	return fMin + f * (fMax - fMin);
+}
+
+void PlanetSystem::CreateRandomPlanet()
+{
+	double angularVelocity = fRand(0, 10E1);
+	double radiusM = (double)rand() / RAND_MAX;
+	double radius = 0.1 + radiusM * (0.7 - 0.1);
+	double mass = 10 + radiusM * (10E8 - 10);
+
+	Planet* planet = new Planet("", mass, glm::dvec3(0, 0, 0), angularVelocity, radius, 0, Shader::FindShader("geometryPass"), &m_earthTexture);
+	m_planetQueue.push(planet);
+}
+
 void PlanetSystem::GeometryPass(Camera& cam){
 	//Physics::Ray mouseRay = cam.ScreenToRay(Input::GetMousePosition());
 
 	for (std::list<Planet*>::iterator planet = m_planets.begin(); planet != m_planets.end(); planet++){
 		planet.operator*()->DrawPlanet(cam);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		planet.operator*()->DrawTail(m_orbitMaterial,cam);
+		glDisable(GL_BLEND);
 	}
 
 	if (Input::MouseVisible)
@@ -130,6 +174,8 @@ void PlanetSystem::GeometryPass(Camera& cam){
 	{
 		m_gridMaterial->GetColor().a = glm::lerp<float>(m_gridMaterial->GetColor().a, 0, 0.05);
 	}
+
+	DrawPlanetPlace(cam);
 }
 
 void PlanetSystem::LightingPass(Camera& cam,LightPass* lightPass)
@@ -164,6 +210,71 @@ void PlanetSystem::DrawGrid(Camera& camera){
 	}
 }
 
+void PlanetSystem::PredictOrbit(Planet* planet)
+{
+	planet->ClearTail();
+	glm::dvec3 startingPos = planet->GetObject()->transform.position;
+	glm::dvec3 velocity;
+
+	for (int steps = 0; steps < ORBIT_PREDITION_STEPS; steps++)
+	{
+		velocity = CalculateVelocity(planet, ORBIT_PREDITION_STEP_SIZE);
+		planet->SetVelocity(velocity);
+		planet->GetObject()->transform.position += velocity * ORBIT_PREDITION_STEP_SIZE;
+		planet->SaveOrbitPoint();
+	}
+
+	planet->GetObject()->transform.position = startingPos;
+}
+
+void PlanetSystem::ManagePlanetPlace()
+{
+	if (!m_planetQueue.empty() && Input::MouseVisible && m_planetToBePlaced == nullptr)
+	{
+		m_planetQueue.front()->GetObject()->transform.position = Input::GetMouseWorldPlanePosition();
+
+		if (Input::GetCurrentEvent().mouseAction == GLFW_PRESS && Input::GetCurrentEvent().mouseButton == GLFW_MOUSE_BUTTON_1)
+		{
+			m_planetToBePlaced = m_planetQueue.front();
+			m_planetQueue.pop();
+		}
+	}
+	else if (Input::MouseVisible && m_planetToBePlaced != nullptr)
+	{
+		if (Input::GetCurrentEvent().mouseButton == GLFW_MOUSE_BUTTON_1)
+		{
+			if (Input::GetCurrentEvent().mouseAction == GLFW_DRAGG)
+			{
+				PredictOrbit(m_planetToBePlaced);
+				m_planetToBePlaced->SetVelocity(Input::GetMouseWorldPlanePosition() - m_planetToBePlaced->GetObject()->transform.position);
+			}
+			else if (Input::GetCurrentEvent().mouseAction == GLFW_RELEASE)
+			{
+				m_planetToBePlaced->ClearTail();
+				AddPlanet(m_planetToBePlaced);
+				m_planetToBePlaced = nullptr;
+			}
+		}
+	}
+}
+
+void PlanetSystem::DrawPlanetPlace(Camera& camera)
+{
+	if (!m_planetQueue.empty() && Input::MouseVisible && m_planetToBePlaced == nullptr)
+	{
+		m_planetQueue.front()->DrawPlanet(camera);
+	}
+	else if (Input::MouseVisible && m_planetToBePlaced != nullptr)
+	{
+		m_planetToBePlaced->DrawPlanet(camera);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		m_planetToBePlaced->DrawTail(m_orbitMaterial,camera);
+		glDisable(GL_BLEND);
+		GUI::DrawLine(m_planetToBePlaced->GetObject()->transform.position,Input::GetMouseWorldPlanePosition(),glm::vec4(1,0,0,1),Shader::FindShader("orbitShader"));
+	}
+}
+
 GUI::Rect SelectedPlanetWindowRect = GUI::Rect(64, 256, 256, 256);
 
 void PlanetSystem::GUI(Canvas* canvas,Camera& camera)
@@ -189,7 +300,10 @@ void PlanetSystem::GUI(Canvas* canvas,Camera& camera)
 
 	if (Input::MouseVisible)
 	{
-		GUI::Button(canvas, GUI::Rect(width - 86, height / 2 - 48, 64, 64), "", "createPlanetButton");
+		if (GUI::Button(canvas, GUI::Rect(width - 86, height / 2 - 48, 64, 64), "", "createPlanetButton"))
+		{
+			CreateRandomPlanet();
+		}
 		GUI::Button(canvas, GUI::Rect(width - 86, height / 2 + 48, 64, 64), "", "createSunButton");
 
 		if (m_selectedPlanet != nullptr)
@@ -234,5 +348,8 @@ double PlanetSystem::round(double f, double prec)
 
 PlanetSystem::~PlanetSystem()
 {
-	
+	while (!m_planets.empty())
+	{
+		delete m_planets.front(), m_planets.pop_front();
+	}
 }

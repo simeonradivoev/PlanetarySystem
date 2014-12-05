@@ -1,0 +1,38 @@
+Naboo
+Hoth
+Mars
+Bespin
+Alderaan
+Endor
+Geonosis
+Mustafar
+Tatooine
+Yavin 4
+Kamino
+Dagobah
+Kashyyyk
+Altair
+Angel 1
+Dune
+Hyperion
+Ocampa
+Vulcan
+Ragnarok
+Rosetta
+Sauria
+Solaris
+Mote Prime
+Annares
+LV-426
+Pandora
+Gallifrey
+Titan
+Callisto
+Io
+Europa
+Triton
+Titania
+Kepler
+Neptune
+Uranus
+Saturn

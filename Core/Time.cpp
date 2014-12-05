@@ -5,7 +5,7 @@ double Time::deltaTime;
 double Time::deltaTimeSmooth;
 double Time::time;
 double Time::m_timeScale = 1;
-double Time::m_fixedDeltaTime = 1 / 75.0;
+double Time::m_fixedDeltaTime = 1 / 60.0;
 double Time::m_deltaTimeUnscaled = 0;
 double Time::m_timeUnscaled = 0;
 

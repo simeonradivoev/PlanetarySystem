@@ -8,6 +8,7 @@
 #include <glm\glm.hpp>
 
 class Canvas;
+class Shader;
 
 class GUI
 {
@@ -58,6 +59,7 @@ public:
 	static bool OverRect(Rect r);
 	static glm::vec2 WorldToScreen(glm::dvec3 worldPos, Camera& camera);
 	static bool WorlPointOnScreen(glm::dvec3 worldPos, Camera& camera);
+	static void DrawLine(glm::dvec3 from, glm::dvec3 to, glm::vec4 Color, Shader* shader);
 	static bool Button(Canvas* canvas, Rect rect, const char* name, Style style);
 	static bool Button(Canvas* canvas, Rect rect, const char *name, const char *style);
 	static bool Button(Canvas* canvas, Rect rect, const char *name);

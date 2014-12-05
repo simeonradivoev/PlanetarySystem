@@ -19,25 +19,30 @@ class Planet
 public:
 	Planet(std::string name, double mass, glm::dvec3 velocity, double angularVelocity, double radius,double m_lightIntencity,Shader* shader,Texture* texture);
 	GameObject* GetObject(){ return m_object; }
-	void SetObject(GameObject* object){ m_object = object; m_object->name = m_name; }
-	Light* GetLight(){ return m_light; }
-	void SetLight(Light* light){ m_light = light; }
-	double GetSpin(){ return m_spin; }
-	void SetSpin(double s){ m_spin = s; }
-	double GetAngularVelocity(){ return m_angularVelocity; }
-	void SetAngularVelocity(double v){ m_angularVelocity = v; }
-	glm::dvec3 GetVelocity(){ return m_velocity; }
-	void SetVelocity(const glm::dvec3 v){ m_velocity = v; }
-	double GetMass(){ return m_mass; }
-	void SetMass(const double m){ m_mass = m; }
-	double GetRadius(){ return m_radius; }
+	inline void SetObject(GameObject* object){ m_object = object; m_object->name = m_name; }
+	inline Light* GetLight(){ return m_light; }
+	inline void SetLight(Light* light){ m_light = light; }
+	inline double GetSpin(){ return m_spin; }
+	inline void SetSpin(double s){ m_spin = s; }
+	inline double GetAngularVelocity(){ return m_angularVelocity; }
+	inline void SetAngularVelocity(double v){ m_angularVelocity = v; }
+	inline glm::dvec3 GetVelocity(){ return m_velocity; }
+	inline void SetVelocity(const glm::dvec3 v){ m_velocity = v; }
+	inline double GetMass(){ return m_mass; }
+	inline void SetMass(const double m){ m_mass = m; }
+	inline double GetRadius(){ return m_radius; }
 	void DrawTail(Material* material, Camera& camera);
 	void CalculateTail();
 	void DrawPlanet(Camera& camera);
 	void DrawSelection(Camera& camera,Shader* shader);
 	void DrawLight(Camera& camera,LightPass* lightPass);
+	inline void SetOrbitColor(glm::vec3 color){ m_orbitColor = color; }
+	inline void SetOrbitColor(float r, float g, float b){ m_orbitColor = glm::vec3(r / 255, g / 255, b / 255); }
+	void SaveOrbitPoint();
+	void ClearTail();
 	~Planet();
 private:
+	std::string GetRandomName();
 	double m_mass;
 	glm::dvec3 m_velocity;
 	double m_spin = 0;
@@ -49,6 +54,7 @@ private:
 	double m_orbitSampleTimer = 0;
 	double m_lightIntencity;
 	double m_radius;
+	glm::vec3 m_orbitColor;
 	std::list<glm::dvec3> m_orbit;
 };
 #endif //PLANET_H

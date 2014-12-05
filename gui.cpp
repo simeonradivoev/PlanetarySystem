@@ -1,5 +1,7 @@
 #include "gui.h"
 #include "canvas.h"
+#include "shader.h"
+#include <glm\gtc\type_ptr.hpp>
 #include <iostream>
 
 int GUI::m_activeWindowID = -1;
@@ -49,6 +51,21 @@ glm::vec2 GUI::WorldToScreen(glm::dvec3 worldPos, Camera& camera)
 bool GUI::WorlPointOnScreen(glm::dvec3 worldPos, Camera& camera)
 {
 	return (camera.GetViewProjection() * glm::dvec4(worldPos, 1)).w > 0;
+}
+
+void GUI::DrawLine(glm::dvec3 from, glm::dvec3 to,glm::vec4 Color,Shader* shader)
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	shader->Bind();
+	shader->Update(Transform(), *Camera::GetCurrentCamera());
+	shader->SetColor(Color);
+
+	glBegin(GL_LINE_STRIP);
+	glVertex3dv(glm::value_ptr(from));
+	glVertex3dv(glm::value_ptr(to));
+	glEnd();
+	glDisable(GL_BLEND);
 }
 
 bool GUI::Button(Canvas* canvas, Rect rect, const char* name, Style style)

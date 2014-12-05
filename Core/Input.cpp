@@ -1,5 +1,6 @@
 #include "Input.h"
 #include "Time.h"
+#include "../physics.h"
 
 vec2 Input::HVInputRaw;
 vec2 Input::HVInputSmooth;
@@ -8,6 +9,7 @@ vec2 Input::m_lastMousePosition;
 vec2 Input::m_mousePos;
 Input::InputEvent Input::m_currentEvent;
 bool Input::m_mouseIsPressed = false;
+dvec3 Input::m_mouseWorldPlanePoition;
 
 bool Input::MouseVisible;
 
@@ -100,6 +102,8 @@ void Input::ManageInput(Display& display){
 	HVInputSmooth = glm::lerp(HVInputSmooth, HVInputRaw, 0.1f);
 
 	m_mouseDelta = (m_mousePos - m_lastMousePosition) * (float)Time::GetDeltaTime(TIME_DELTA_RAW);
+	Physics::IntersectsPlane(Camera::GetCurrentCamera()->ScreenToRay(m_mousePos), dvec3(), dvec3(0, 1, 0), &m_mouseWorldPlanePoition);
+
 	m_currentEvent.mouseDelta = (m_mousePos - m_lastMousePosition);
 	m_lastMousePosition = m_mousePos;
 }
