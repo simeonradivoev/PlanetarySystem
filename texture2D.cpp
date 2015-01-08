@@ -6,9 +6,10 @@ Texture2D::Texture2D(const std::string& fileName, bool clamp)
 	int width, heigh, numComponents;
 	stbi_uc* imageData = stbi_load(fileName.c_str(), &width, &heigh, &numComponents, 4);
 
-	if (imageData != NULL){
+	if (imageData != NULL)
+	{
 		Initialize(width, heigh, GL_RGB, GL_RGBA,GL_UNSIGNED_BYTE, clamp);
-		Create(imageData);
+		Create(imageData,true);
 	}
 	else
 	{

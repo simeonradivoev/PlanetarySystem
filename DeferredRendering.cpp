@@ -2,6 +2,7 @@
 #include "renderTexture.h"
 #include "Gbuffer.h"
 #include <glm\gtc\type_ptr.hpp>
+#include "Core\Input.h"
 
 /**
 *	Create the deferred rendering object. I have hardcoded the shader's name here.
@@ -23,7 +24,18 @@ DeferredRendering::DeferredRendering(int _dWidth, int _dHeight, Gbuffer* gBuffer
 
 void DeferredRendering::UpdateShader()
 {
-	glUniform3fARB(m_ambientLightID,0,0.15f,0.3f);
+	if (Input::MouseVisible)
+	{
+		glUniform3fvARB(m_ambientLightID,1,glm::value_ptr(Display::GetCurrentDisplay()->GetClearColor()));
+	}
+	else
+	{
+		glUniform3fARB(m_ambientLightID, 0, 0, 0);
+	}
+
+	glUniform1fARB(glGetUniformLocationARB(m_shader->GetProgram(), "fWidth"), m_width);
+	glUniform1fARB(glGetUniformLocationARB(m_shader->GetProgram(), "fHeight"), m_height);
+	glUniform1fARB(glGetUniformLocationARB(m_shader->GetProgram(), "fHdrExposure"), 0.05f);
 }
 
 /**

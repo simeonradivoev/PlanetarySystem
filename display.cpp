@@ -62,9 +62,10 @@ bool Display::IsClosed()
 	return m_isClosed;
 }
 
-void Display::Clear(float r, float g, float b){
-	glClearColor(r, g, b, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void Display::Clear(GLbitfield mask)
+{
+	glClearColor(m_backgroundColor.x, m_backgroundColor.y, m_backgroundColor.z, 1.0f);
+	glClear(mask);
 }
 
 void Display::Update()

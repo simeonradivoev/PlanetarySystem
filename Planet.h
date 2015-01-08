@@ -31,13 +31,16 @@ public:
 	inline double GetMass(){ return m_mass; }
 	inline void SetMass(const double m){ m_mass = m; }
 	inline double GetRadius(){ return m_radius; }
+	inline double GetEmission(){ return m_lightIntencity; }
 	void DrawTail(Material* material, Camera& camera);
 	void CalculateTail();
 	void DrawPlanet(Camera& camera);
+	void DrawAtmosphere(Camera& camera);
+	void UpdateAtmosphereShaderUniforms(Camera& camera,Shader* shader);
 	void DrawSelection(Camera& camera,Shader* shader);
 	void DrawLight(Camera& camera,LightPass* lightPass);
 	inline void SetOrbitColor(glm::vec3 color){ m_orbitColor = color; }
-	inline void SetOrbitColor(float r, float g, float b){ m_orbitColor = glm::vec3(r / 255, g / 255, b / 255); }
+	inline void SetOrbitColor(float r, float g, float b){ m_orbitColor = glm::vec3(r / 255.0f, g / 255.0f, b / 255.0f); }
 	void SaveOrbitPoint();
 	void ClearTail();
 	~Planet();

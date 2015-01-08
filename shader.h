@@ -17,18 +17,21 @@ public:
 	void Reset();
 	static std::string LoadShader(const std::string& fileName);
 	static GLuint CreateShader(const std::string& text, GLenum shaderType);
+	static void LoadShaderData(GLuint shader, const std::string& data);
 	void SetColor(glm::vec4 color);
 	void SetEmission(float amount);
 	GLuint GetProgram(){ return m_program; }
 	void AddUniform(const char *name);
 	void AddAllUniforms(std::string shaderData);
 	operator GLuint() const{ return m_program; }
-	
+	void Reload();
 
 	static void LoadAllShaders();
+	static void ReloadAllShaders();
+	static void DeleteAllShaders();
 	static bool HasShader(const char *name){ return m_shadersMap.find(name) == m_shadersMap.end(); }
 	static Shader* FindShader(const char *name){ return m_shadersMap[name]; }
-
+	void DeleteShader();
 	virtual ~Shader();
 	
 private:
@@ -48,6 +51,7 @@ private:
 	GLuint m_program;
 	GLuint m_shaders[NUM_SHADERS];
 	GLuint m_uniforms[NUM_UNIFORMS];
+	std::string m_name;
 	static std::map<const char*, Shader*> m_shadersMap;
 	std::map<const char*, GLuint> m_uniformsMap;
 };

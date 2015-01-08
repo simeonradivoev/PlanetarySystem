@@ -12,18 +12,30 @@ Canvas::Canvas(GLFWwindow* window, int width, int height)
 	CreateDefaultStyles();
 }
 
-void Canvas::Begin(){
-	BeginLayout(0, 0);
+void Canvas::Begin()
+{
+	
+	
+	m_controlCounter = 0;
+	BeginLayout(0, 0,m_width,m_height);
 	nvgBeginFrame(m_context, m_width, m_height, (float)m_width / (float)m_height);
 }
 void Canvas::End()
 { 
+	if (Input::GetCurrentEvent().mouseAction == GLFW_PRESS && Input::GetCurrentEvent().mouseButton == GLFW_MOUSE_BUTTON_1 && !m_currentEvent.Events[CE_ACTIVE_CONTROL])
+	{
+		m_activeControl = 0;
+	}
+
 	EndLayout();
 	while (!m_currentLayout.empty())
 	{
 		m_currentLayout.pop();
 	}
 	nvgEndFrame(m_context); 
+
+	m_lastEvent = Event(m_currentEvent);
+	m_currentEvent = Event();
 }
 
 void Canvas::CreateDefaultStyles()
@@ -49,10 +61,17 @@ void Canvas::CreateDefaultStyles()
 	window.pressFillColor = nvgRGBA(5, 10, 20, 220);
 	window.topMargin = 20;
 
+	GUI::Style textField = GUI::Style(createPlanetButton);
+	textField.textAllignment = NVG_ALIGN_LEFT | NVG_ALIGN_MIDDLE;
+
+	GUI::Style slider = GUI::Style(createPlanetButton);
+
 	AddStyle("createPlanetButton", createPlanetButton);
 	AddStyle("createSunButton", createSunButton);
 	AddStyle("label", label);
 	AddStyle("window", window);
+	AddStyle("textField", textField);
+	AddStyle("slider", slider);
 }
 
 

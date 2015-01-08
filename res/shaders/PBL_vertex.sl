@@ -4,4 +4,4 @@ layout (location = 2) in vec3 normal;
 
 out vec3 normal0;
 out vec3 position0;
-out vec2	texCoord0;
+out vec2 texCoord0;

@@ -14,7 +14,9 @@ public:
 	Display(int width,int height,const std::string& title);
 	void Update();
 	bool IsClosed();
-	void Clear(float r,float g,float b);
+	void Clear(GLbitfield mask);
+	inline void SetClearColor(glm::vec3 color){ m_backgroundColor = color; }
+	inline glm::vec3 GetClearColor(){ return m_backgroundColor; }
 	void Bind();
 	GLFWwindow* GetWindow(){ return m_window; }
 	static Display* GetCurrentDisplay(){ return Display::m_currentDisplay; }
@@ -27,6 +29,7 @@ private:
 	Display(const Display& other){}
 	Display& operator=(const Display& other){}
 	GLFWwindow* m_window;
+	glm::vec3 m_backgroundColor;
 	bool m_isClosed;
 	int mouseVisible;
 	static Display* m_currentDisplay;

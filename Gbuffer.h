@@ -35,6 +35,7 @@ public:
 	void BindForStencilPass();
 	void BindForLightingPass();
 	void BindForFinalPass();
+	void BindForTransperatPass();
 	void StartFrame();
 
 private:
@@ -42,6 +43,7 @@ private:
 	// Variables
 	GLuint			m_fbo; // The FBO ID
 	RenderTexture*	m_diffuse;
+	RenderTexture*  m_transperentDiffuse;
 	RenderTexture*	m_positions;
 	RenderTexture*	m_normals;
 	RenderTexture*	m_texCoords;

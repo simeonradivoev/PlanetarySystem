@@ -26,6 +26,11 @@ void Scene::LightingPass(Camera& cam,LightPass* pass){
 
 }
 
+void Scene::TransperentPass(Camera& cam)
+{
+
+}
+
 void Scene::Create(){
 
 }

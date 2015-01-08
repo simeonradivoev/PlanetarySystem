@@ -19,10 +19,8 @@ Time::Time()
 }
 
 
-void Time::Update(Scene& scene){
-
-	Time::m_timeScale = glm::lerp(Time::m_timeScale,Input::MouseVisible ? 0.1 : 1,0.05);
-
+void Time::Update(Scene& scene)
+{
 	double currentTime = glfwGetTime();
 	Time::deltaTime = (currentTime - lastDeltaTime) * Time::m_timeScale;
 	Time::m_deltaTimeUnscaled = currentTime - lastDeltaTime;

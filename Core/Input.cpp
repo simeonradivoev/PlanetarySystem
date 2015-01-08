@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Time.h"
 #include "../physics.h"
+#include "../shader.h"
 
 vec2 Input::HVInputRaw;
 vec2 Input::HVInputSmooth;
@@ -10,6 +11,7 @@ vec2 Input::m_mousePos;
 Input::InputEvent Input::m_currentEvent;
 bool Input::m_mouseIsPressed = false;
 dvec3 Input::m_mouseWorldPlanePoition;
+bool Input::m_currentEventTaken = false;
 
 bool Input::MouseVisible;
 
@@ -18,23 +20,20 @@ Input::Input(Display& display)
 	glfwSetKeyCallback(display.GetWindow(), Input::key_callback);
 	glfwSetCursorPosCallback(display.GetWindow(), Input::mouse_pos_callback);
 	glfwSetMouseButtonCallback(display.GetWindow(),Input::mouseButtons_callback);
+	glfwSetCharCallback(display.GetWindow(), Input::char_callback);
+}
+
+void Input::char_callback(GLFWwindow* window, unsigned int code)
+{
+	m_currentEvent.character = code;
+	m_currentEvent.characterPress = true;
 }
 
 void Input::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	//enable and disable the mouse
-	if (action == GLFW_PRESS){
-		if (key == GLFW_KEY_ESCAPE){
-			if (Input::MouseVisible){
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				Input::MouseVisible = false;
-			}
-			else
-			{
-				glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				Input::MouseVisible = true;
-			}
-		}
+	if (key == GLFW_KEY_R && action == GLFW_PRESS)
+	{
+		Shader::ReloadAllShaders();
 	}
 
 	m_currentEvent.key = key;
@@ -58,7 +57,8 @@ void Input::mouseButtons_callback(GLFWwindow* window, int button, int action, in
 	m_currentEvent.mouseButton = button;
 }
 
-float Input::GetHorizontalInput(int type){
+float Input::GetHorizontalInput(int type)
+{
 	if (type == INPUT_SMOOTH){
 		return HVInputSmooth.x;
 	}
@@ -101,7 +101,7 @@ void Input::ManageInput(Display& display){
 
 	HVInputSmooth = glm::lerp(HVInputSmooth, HVInputRaw, 0.1f);
 
-	m_mouseDelta = (m_mousePos - m_lastMousePosition) * (float)Time::GetDeltaTime(TIME_DELTA_RAW);
+	m_mouseDelta = (m_mousePos - m_lastMousePosition) * (float)Time::GetDeltaTime(TIME_DELTA_UNSCALSED);
 	Physics::IntersectsPlane(Camera::GetCurrentCamera()->ScreenToRay(m_mousePos), dvec3(), dvec3(0, 1, 0), &m_mouseWorldPlanePoition);
 
 	m_currentEvent.mouseDelta = (m_mousePos - m_lastMousePosition);
@@ -112,6 +112,8 @@ void Input::PollEvents()
 {
 	m_currentEvent.keyAction = GLFW_KEY_UNKNOWN;
 	m_currentEvent.mouseAction = GLFW_KEY_UNKNOWN;
+	m_currentEvent.characterPress = false;
+	m_currentEventTaken = false;
 	if (Input::m_mouseIsPressed)
 	m_currentEvent.mouseAction = GLFW_DRAGG;
 	glfwPollEvents();

@@ -27,6 +27,7 @@ uniform sampler2D gNormalMap;
 
 uniform vec2 gScreenSize;
 uniform PointLight gPointLight;
+uniform float fHdrExposure;
 
 #include "basicTransform.sl"
 
@@ -75,10 +76,13 @@ vec2 CalcTexCoord()
 void main()
 {
 	vec2 TexCoord = CalcTexCoord();
-	vec3 WorldPos = texture(gPositionMap, TexCoord).xyz;
+	vec4 Diffuse = texture(gColorMap, TexCoord);
+	vec4 WorldPos = texture(gPositionMap, TexCoord);
 	vec3 Normal = texture(gNormalMap, TexCoord).xyz;
-    vec4 Color = texture(gColorMap, TexCoord);
 	
-	LightOut = CalcPointLight(WorldPos,Normal);
+	vec4 Color = Diffuse * max(vec4(WorldPos.a),CalcPointLight(WorldPos.xyz,Normal));
+	Color = 1.0 - exp(Color * -fHdrExposure);
+	
+	LightOut = Color;
 	//LightOut = vec4(WorldPos,1);
 }

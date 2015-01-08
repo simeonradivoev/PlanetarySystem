@@ -20,7 +20,7 @@ public:
 	static void SetTimeScale(double timeScale){ Time::m_timeScale = timeScale; }
 	static double GetTimeScale(){ return m_timeScale; }
 	static const double GetFixedDeltaTime(){ return m_fixedDeltaTime * m_timeScale; }
-	static const double GetDeltaTime(bool type){ if (type == TIME_DLETA_SMOOTH) return Time::deltaTimeSmooth; else if (type == TIME_DELTA_RAW) return Time::deltaTime; else return m_deltaTimeUnscaled; }
+	static const double GetDeltaTime(int type){ if (type == TIME_DLETA_SMOOTH) return Time::deltaTimeSmooth; else if (type == TIME_DELTA_RAW) return Time::deltaTime; else return m_deltaTimeUnscaled; }
 	static const double GetTime(){ return time; }
 	static const double GetTimeUnscaled(){ return m_timeUnscaled; }
 	static const int GetFPS(){ return roundEven(1.0 / Time::m_deltaTimeUnscaled); }

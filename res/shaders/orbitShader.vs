@@ -1,4 +1,4 @@
-#version 420
+#version 330
 #include "basicTransform.sl"
 
 layout (location = 0) in vec3 position; 
@@ -13,6 +13,6 @@ void main( void )
 {
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(position,1.0);
 	texCoord0	=  uv;
-	normal0 = normalize(( ModelMatrix * vec4(normal,0.0)).xyz);
+	normal0 = normalize(( ModelMatrix * vec4(0,-1,0,0)).xyz);
 	position0 = (ModelMatrix * vec4(position,1.0)).xyz;
 }

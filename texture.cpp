@@ -13,7 +13,7 @@ void Texture::Initialize(unsigned int width, unsigned int height, GLenum iternal
 	m_filter = filter;
 }
 
-void Texture::Create(const void *pixels){
+void Texture::Create(const void *pixels,bool mipmaps){
 	//Alocate space for texture in GPU and return handler
 	glGenTextures(1, &m_texture);
 	//bind the texture for use
@@ -22,9 +22,13 @@ void Texture::Create(const void *pixels){
 	GLint clamp = m_clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
 	setWrap(clamp);
 	//Texture filtering
-	setFiltering(m_filter);
-	//populate the image with the data
+	setFiltering(mipmaps ? GL_NEAREST_MIPMAP_LINEAR : m_filter);
+
+	if (mipmaps)
+		glTexParameteri(GL_TEXTURE_2D,GL_GENERATE_MIPMAP,GL_TRUE);
+
 	glTexImage2D(GL_TEXTURE_2D, 0, m_iternalFormat, m_width, m_height, 0, m_format, m_type, pixels);
+	
 }
 
 void Texture::CreateEmpty(){

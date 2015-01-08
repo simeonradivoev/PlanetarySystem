@@ -14,10 +14,10 @@ Gbuffer::Gbuffer(int _dWidth, int _dHeight)
 
 	// Generate the OGL resources for what we need
 	glGenFramebuffersEXT(1, &m_fbo);
-	m_diffuse = new RenderTexture(m_width, m_height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, true,GL_NEAREST);
+	m_diffuse = new RenderTexture(m_width, m_height, GL_RGBA, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
 	m_positions = new RenderTexture(m_width, m_height, GL_RGBA32F_ARB, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
 	m_normals = new RenderTexture(m_width, m_height, GL_RGBA16F_ARB, GL_RGBA, GL_FLOAT, true, GL_NEAREST);
-	m_lighting = new RenderTexture(m_width, m_height, GL_RGBA, GL_RGB, GL_FLOAT, true, GL_LINEAR);
+	m_lighting = new RenderTexture(m_width, m_height, GL_RGBA32F_ARB, GL_RGB, GL_FLOAT, true, GL_NEAREST);
 	m_depthTexture = new RenderTexture(m_width, m_height, GL_DEPTH32F_STENCIL8, GL_DEPTH_STENCIL, GL_FLOAT_32_UNSIGNED_INT_24_8_REV, true, GL_NEAREST);
 
 
@@ -66,12 +66,23 @@ void Gbuffer::BindForLightingPass()
 	m_normals->Bind(2);
 }
 
+void Gbuffer::BindForTransperatPass()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	Display::GetCurrentDisplay()->Clear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glEnable(GL_BLEND);
+}
+
 void Gbuffer::BindForFinalPass()
 {
+	m_diffuse->Bind(0);
+	m_positions->Bind(1);
+	m_normals->Bind(2);
 	m_lighting->Bind(3);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glReadBuffer(GL_COLOR_ATTACHMENT3_EXT);
+	//glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, Display::GetCurrentDisplay()->GetWidth(), Display::GetCurrentDisplay()->GetHeight(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
 }
 
 void Gbuffer::StartFrame()
@@ -112,5 +123,5 @@ void Gbuffer::start(){
 *	Stop rendering to this texture.
 */
 void Gbuffer::stop(){
-	glDepthMask(GL_FALSE);
+	
 }

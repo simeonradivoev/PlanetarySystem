@@ -15,6 +15,7 @@ public:
 	~LightPass();
 	static Shader* GetPointLightShader(){ return m_pointLightShader; }
 	void Start(Camera& camera);
+	void StartDrawAtmospheres(Camera& camera);
 	void End();
 	void UpdateShader(Camera& camera);
 	void UpdateShader(Light& light);
@@ -23,6 +24,7 @@ public:
 private:
 	Gbuffer* m_gbuffer;
 	static Shader* m_pointLightShader;
+	float m_hdrExposure = 0.07f;
 
 	GLuint m_colorTexture_u;
 	GLuint m_positionsTexture_u;
@@ -38,5 +40,6 @@ private:
 	GLuint m_constantAttenuation_u;
 	GLuint m_expAttenuation_u;
 	GLuint m_position_u;
+	GLuint m_hdrExposure_u;
 };
 #endif //LIGHT_PASS_H

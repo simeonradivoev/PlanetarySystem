@@ -1,4 +1,4 @@
-#version 420
+#version 330
 
 in vec3		position0;
 in vec3		normal0;
@@ -16,5 +16,5 @@ void main( void )
 {
 	DiffuseOut		=  color;
 	WorldPosOut		=  vec4(position0,emission);
-	NormalOut		= 		vec4(0,1.0,0,1.0);
+	NormalOut		= 	vec4(normal0,1);
 }

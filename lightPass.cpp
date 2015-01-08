@@ -24,7 +24,7 @@ LightPass::LightPass(Gbuffer* gbuffer)
 	m_linearAttenuation_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Atten.Linear");
 	m_expAttenuation_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Atten.Exp");
 	m_position_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "gPointLight.Position");
-
+	m_hdrExposure_u = glGetUniformLocationARB(*LightPass::m_pointLightShader, "fHdrExposure");
 }
 
 void LightPass::BindGBufferTextures(){
@@ -33,11 +33,14 @@ void LightPass::BindGBufferTextures(){
 	//m_gbuffer->getNormalsTexture()->Bind();
 }
 
-void LightPass::UpdateShader(Camera& camera){
+void LightPass::UpdateShader(Camera& camera)
+{
+	glUseProgram(LightPass::m_pointLightShader->GetProgram());
 	int screenWidth, screenHeight;
 	glfwGetWindowSize(Display::GetCurrentDisplay()->GetWindow(), &screenWidth, &screenHeight);
 	glUniform2f(m_screenSize_u, screenWidth, screenHeight);
 	glUniform3fv(m_eyePosition, 1, glm::value_ptr((glm::vec3)camera.GetTransform().position));
+	glUniform1f(m_hdrExposure_u, m_hdrExposure);
 
 	glUniform1iARB(m_colorTexture_u, 0);
 	glUniform1iARB(m_positionsTexture_u, 1);
@@ -53,7 +56,8 @@ void LightPass::UpdateShader(Light& light)
 	glUniform1f(m_constantAttenuation_u, light.GetAttenuationConstant());
 	glUniform1f(m_linearAttenuation_u, light.GetAttenuationLinear());
 	glUniform1f(m_expAttenuation_u, light.GetAttenuationExp());
-	glUniform3fv(m_position_u,1, glm::value_ptr((glm::vec3)light.GetBoundingSphere()->transform.position));
+	glUniform1f(m_expAttenuation_u, light.GetAttenuationExp());
+	glUniform3fv(m_position_u, 1, glm::value_ptr((glm::vec3)(light.GetBoundingSphere()->transform.position)));
 }
 
 
@@ -72,14 +76,21 @@ void LightPass::Start(Camera& camera){
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
-	glUseProgram(LightPass::m_pointLightShader->GetProgram());
+	
 	UpdateShader(camera);
+}
+
+void LightPass::StartDrawAtmospheres(Camera& camera)
+{
+	
+
 }
 
 void LightPass::End(){
 	glUseProgram(0);
 	glCullFace(GL_BACK);
 	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void LightPass::StencilTest()

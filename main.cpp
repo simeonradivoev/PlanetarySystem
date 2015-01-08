@@ -31,7 +31,7 @@ void GeometryPass(Scene& scene,Camera& camera,Display& display){
 	m_Gbuffer->stop();
 }
 
-void LightingPass(Scene& scene, Camera& camera)
+void LightingPass(PlanetSystem& scene, Camera& camera)
 {
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -48,14 +48,19 @@ void LightingPass(Scene& scene, Camera& camera)
 
 	m_lighPass->Start(camera);
 	scene.LightingPass(camera,m_lighPass);
+
 	m_lighPass->End();
-    glDisable(GL_STENCIL_TEST);
+	glDisable(GL_STENCIL_TEST);
 
 	//m_deferredRendering->render(camera);
 }
 
-void FinalPass(Camera& camera)
+void FinalPass(Scene& scene, Camera& camera)
 {
+	m_Gbuffer->BindForTransperatPass();
+	//scene.GeometryPass(camera);
+	scene.TransperentPass(camera);
+
 	m_Gbuffer->BindForFinalPass();
 	m_deferredRendering->SetAmbientLighting(glm::vec3(0, 0.15, 0.3));
 	m_deferredRendering->render(camera);
@@ -98,8 +103,11 @@ int main(int argc, char *argv[]){
 	{
 		//updates time
 		time.Update(mainScene);
-
-		display.Clear(0, 0.15, 0.3);
+		display.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if (Input::MouseVisible)
+			display.SetClearColor(glm::vec3(0, 0.075, 0.15));
+		else
+			display.SetClearColor(glm::vec3());
 		input.ManageInput(display);
 		camera.OnRender(display);
 		
@@ -111,7 +119,7 @@ int main(int argc, char *argv[]){
 		//calculate lighting
 		LightingPass(mainScene, camera);
 		//dump the GBuffer on screen
-		FinalPass(camera);
+		FinalPass(mainScene, camera);
 
 		canvas->Begin();
 		GUITest(canvas, display, mainScene, camera);

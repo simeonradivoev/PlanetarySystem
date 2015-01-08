@@ -11,6 +11,7 @@ const std::string INCLUDE_DIRECTIVE = "#include";
 std::map<const char*, Shader*> Shader::m_shadersMap;
 
 Shader::Shader(const std::string& fileName)
+:m_name(fileName)
 {
 	m_program = glCreateProgram();
 	std::string vShaderData = LoadShader(fileName + ".vs");
@@ -43,16 +44,21 @@ Shader::Shader(const std::string& fileName)
 	m_uniforms[EMISSION_U] = glGetUniformLocation(m_program, "emmision");
 }
 
-
-Shader::~Shader()
+void Shader::DeleteShader()
 {
 	for (unsigned int i = 0; i < NUM_SHADERS; i++)
 	{
-		glDetachShader(m_program,m_shaders[i]);
+		glDetachShader(m_program, m_shaders[i]);
 		glDeleteShader(m_shaders[i]);
 	}
 
 	glDeleteProgram(m_program);
+}
+
+
+Shader::~Shader()
+{
+	DeleteShader();
 }
 
 void Shader::Bind()
@@ -93,18 +99,54 @@ GLuint Shader::CreateShader(const std::string& text, GLenum shaderType)
 	if (shader == 0)
 		std::cerr << "Error: Shader creation failed" << std::endl;
 
+	LoadShaderData(shader,text);
+	return shader;
+}
+
+void Shader::LoadShaderData(GLuint shader, const std::string& data)
+{
 	const GLchar* shaderSourceStrings[1];
 	GLint shaderSourceStringLengths[1];
 
-	shaderSourceStrings[0] = text.c_str();
-	shaderSourceStringLengths[0] = text.length();
+	shaderSourceStrings[0] = data.c_str();
+	shaderSourceStringLengths[0] = data.length();
 
 	glShaderSource(shader, 1, shaderSourceStrings, shaderSourceStringLengths);
 	glCompileShader(shader);
 
 	CheckShaderError(shader, GL_COMPILE_STATUS, false, "Error: Shader compilation failed!");
+}
 
-	return shader;
+void Shader::Reload()
+{
+	//DeleteShader();
+
+	//m_program = glCreateProgram();
+	std::string vShaderData = LoadShader(m_name + ".vs");
+	std::string fShaderData = LoadShader(m_name + ".fs");
+	LoadShaderData(m_shaders[0], vShaderData);
+	LoadShaderData(m_shaders[1], fShaderData);
+
+	for (unsigned int i = 0; i < NUM_SHADERS; i++)
+	{
+		glAttachShader(m_program, m_shaders[i]);
+	}
+
+	glBindAttribLocation(m_program, 0, "position");
+	glBindAttribLocation(m_program, 1, "uv");
+	glBindAttribLocation(m_program, 2, "normal");
+
+	glLinkProgram(m_program);
+	CheckShaderError(m_program, GL_LINK_STATUS, true, "Error: Program linking failed!");
+
+	glValidateProgram(m_program);
+	CheckShaderError(m_program, GL_VALIDATE_STATUS, true, "Error: Program is invalid!");
+
+	m_uniforms[PROJECTION_MATRIX_U] = glGetUniformLocation(m_program, "ProjectionMatrix");
+	m_uniforms[VIEW_MATRIX_U] = glGetUniformLocation(m_program, "ViewMatrix");
+	m_uniforms[MODEL_MATRIX_U] = glGetUniformLocation(m_program, "ModelMatrix");
+	m_uniforms[COLOR_U] = glGetUniformLocation(m_program, "color");
+	m_uniforms[EMISSION_U] = glGetUniformLocation(m_program, "emmision");
 }
 
 std::string Shader::LoadShader(const std::string& fileName)
@@ -220,5 +262,21 @@ void Shader::LoadAllShaders()
 	m_shadersMap["lightPass"] = new Shader("lightPass");
 	m_shadersMap["orbitShader"] = new Shader("orbitShader");
 	m_shadersMap["glowShader"] = new Shader("glowShader");
+	m_shadersMap["groundFromSpace"] = new Shader("groundFromSpace");
+	m_shadersMap["skyFromSpace"] = new Shader("skyFromSpace");
 }
 
+void Shader::ReloadAllShaders()
+{
+	for (std::map<const char*, Shader*>::iterator itr = m_shadersMap.begin(); itr != m_shadersMap.end(); itr++)
+	{
+		itr->second->Reload();
+	}
+
+	printf("all shader reloaded");
+}
+
+void Shader::DeleteAllShaders()
+{
+	
+}

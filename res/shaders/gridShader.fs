@@ -1,4 +1,4 @@
-#version 420
+#version 330
 #include "PBL_fragment.sl"
 
 void main()

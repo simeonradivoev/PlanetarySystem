@@ -28,8 +28,11 @@ public:
 	PlanetSystem();
 	~PlanetSystem();
 	void FixedUpdate() override;
+	void Update() override;
 	void AddPlanet(Planet* planet);
 	void GeometryPass(Camera& cam) override;
+	void AtmospherePass(Camera& cam);
+	void TransperentPass(Camera& cam) override;
 	void LightingPass(Camera& cam,LightPass* lightPass) override;
 	void GUI(Canvas* canvas, Camera& camera) override;
 	void SelectedPlanetOptionsWindow(Canvas* canvas, GUI::Rect rect);
@@ -42,10 +45,12 @@ private:
 	glm::dvec3 CalculateVelocity(Planet* planet, double timeStep);
 	void DrawGrid(Camera& camera);
 	void DrawPlanetPlace(Camera& camera);
+	void DrawPlanetPlaceHelpers(Camera& camera);
 	void PredictOrbit(Planet* planet);
-	void ManagePlanetPlace();
+	void ManagePlanetPlace(Canvas* canvas);
 	double ForceBetween(Planet* a, Planet* b);
 	double round(double f, double prec);
+	double m_speed = 0.2;
 	Material* m_orbitMaterial;
 	Material* m_gridMaterial;
 	Transform m_gridTransform;
@@ -53,5 +58,7 @@ private:
 	std::queue<Planet*> m_planetQueue;
 	Planet* m_planetToBePlaced = nullptr;
 	Texture2D m_earthTexture;
+	Texture2D m_sunTexture;
+	Texture2D m_jupiterTexture;
 };
 #endif //PLANET_SYSTEM_H

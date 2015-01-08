@@ -13,7 +13,8 @@ void Light::GenerateBoundingSphere(Shader* shader)
 {
 	Material* mat = new Material(shader);
 	mat->SetColor(glm::vec4(m_color.x, m_color.y, m_color.z, m_intencity));
-	m_boundingSphere = GameObject::CreateSphere(CalcPointLightBSphere(*this), 15, mat);
+	m_boundingSphere = new GameObject("light",GameObject::GetSphereMesh(),mat);
+	m_boundingSphere->transform.scale = glm::dvec3(CalcPointLightBSphere(*this));
 }
 
 double Light::CalcPointLightBSphere(Light& light){
@@ -29,7 +30,8 @@ double Light::CalcPointLightBSphere(Light& light){
 
 void Light::Draw(Camera& cam,LightPass* lightPass)
 {
-	if (m_boundingSphere != nullptr){
+	if (m_boundingSphere != nullptr)
+	{
 		lightPass->UpdateShader(*this);
 		m_boundingSphere->Draw(cam, LightPass::GetPointLightShader());
 	}

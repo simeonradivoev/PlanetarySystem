@@ -31,7 +31,7 @@ public:
 	GLuint& getTextureHandler(){ return m_texture; }
 protected:
 	void Initialize(unsigned int width, unsigned int height, GLenum iternalFormat = GL_RGB, GLenum format = GL_RGBA,GLenum type = GL_UNSIGNED_BYTE, bool clamp = false,GLenum filter = GL_LINEAR);
-	void Create(const void *pixels);
+	void Create(const void *pixels,bool mipmaps = false);
 private:
 	GLuint m_texture;
 	unsigned int m_height;

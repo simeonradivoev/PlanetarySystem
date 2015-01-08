@@ -70,8 +70,17 @@ public:
 	static Rect BeginWindow(Canvas* canvas,int id, Rect rec, const char *title, const char *style);
 	static Rect BeginWindow(Canvas* canvas,int id, Rect rec, const char *title);
 	static void EndWindow(Canvas* canvas);
+	static std::string TextField(Canvas* canvas, Rect rec, std::string text, Style style);
+	static std::string TextField(Canvas* canvas, Rect rec, std::string text, const char *style);
+	static std::string TextField(Canvas* canvas, Rect rec, std::string text);
+	static double Slider(Canvas* canvas, Rect rec, double value, Style style);
+	static double Slider(Canvas* canvas, Rect rec, double value, const char *style);
+	static double Slider(Canvas* canvas, Rect rec, double value);
 
 private:
+	static std::string ManageTextEdit(Canvas* canvas, std::string text);
+	static void ManageControlOffset(Canvas* canvas, unsigned int length);
+	static Rect GetControlLine(Canvas* canvas, Rect size,std::string text);
 	static int m_activeWindowID;
 	static bool m_windowDragg;
 };

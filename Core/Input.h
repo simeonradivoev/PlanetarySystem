@@ -17,12 +17,15 @@ class Input
 public:
 	struct InputEvent
 	{
+	public:
 		int key = GLFW_KEY_UNKNOWN;
 		glm::vec2 mousePos;
 		glm::vec2 mouseDelta;
 		int mouseButton = GLFW_KEY_UNKNOWN;
 		int keyAction = GLFW_KEY_UNKNOWN;
 		int mouseAction = GLFW_KEY_UNKNOWN;
+		char character;
+		bool characterPress = false;
 	};
 
 	Input(Display& display);
@@ -36,9 +39,12 @@ public:
 	inline static vec2 GetMousePosition(){ return m_mousePos; }
 	inline static dvec3 GetMouseWorldPlanePosition(){ return m_mouseWorldPlanePoition; }
 	static bool GetMouseButton(int button);
-	inline static const InputEvent GetCurrentEvent(){ return m_currentEvent; }
+	inline static const InputEvent& GetCurrentEvent(){ return m_currentEvent; }
+	inline static void TakeCurrentEvent(){ m_currentEventTaken = true; }
+	inline static bool CurrentEventTaken(){ return m_currentEventTaken; }
 private:
 	static InputEvent m_currentEvent;
+	static bool m_currentEventTaken;
 	static vec2 HVInputRaw;
 	static vec2 HVInputSmooth;
 	static vec2 m_mousePos;
@@ -49,5 +55,6 @@ private:
 	static void mouse_pos_callback(GLFWwindow* window, double x, double y);
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void mouseButtons_callback(GLFWwindow* window, int button, int action, int mod);
+	static void char_callback(GLFWwindow* window, unsigned int code);
 };
 #endif //INPUT_H
