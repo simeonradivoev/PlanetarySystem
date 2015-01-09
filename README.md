@@ -8,7 +8,7 @@ I now use it as a learning tool, for c++ and OpenGL.
 If you want to use any part of this project, feel free.
 If you have questions, feel free to ask, and if I can I will answer.
 
-I use a custom deferred lighting system (just point lights) as well as [O'Neil Accurate Atmospheric Scattering Shading](http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter16.html). I also render transparent objects in another pass, witch is very simple.
+I use a custom deferred lighting system (just point lights) as well as [O'Neil Accurate Atmospheric Scattering Shading](http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter16.html). I also render transparent objects in another pass, witch is very simple. The lighting and shading is fully in HDR. It is physically correct.
 
 For the GUI I made a simple GUI system using NanoVG graphics, with basic functionality for text input, sliders and buttons.
 
